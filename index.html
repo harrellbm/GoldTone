@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>GoldTone</title>
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="manifest" href="/manifest.json">
+        <meta name="theme-color" content="blue">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />  
+        <link rel="apple-touch-icon" href="images/hello-icon-152.png">   
+        <meta name="theme-color" content="white"/>  
+        <meta name="apple-mobile-web-app-capable" content="yes">  
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+        <meta name="apple-mobile-web-app-title" content="Hello World"> 
+        <meta name="msapplication-TileImage" content="images/hello-icon-144.png">  
+        <meta name="msapplication-TileColor" content="#FFFFFF">
+    </head>
+    <body class="fullscreen">
+        <div class="container">
+            <h1>
+                Firebase CRUD with Vanilla Javascript
+                <br />
+                <small>
+                    <em>01 Read Data</em>
+                </small>
+            </h1>
+            <ul id="userList"></ul>
+            <div id="userDetail">
+                <p>
+                    Name :
+                    <strong class="detailName"></strong>
+                </p>
+                <p>
+                    Age:
+                    <strong class="detailAge"></strong>
+                </p>
+                <p>
+                    Email:
+                    <strong class="detailEmail"></strong>
+                </p>
+            </div>
+
+            <!-- add user module -->
+            <section id="add-user-module"> <button id="open-add-user-form-btn">+</button>
+                <form>
+                    <h2>Add User</h2> name:<br> <input type='text' data-key='name' class='user-input'><br> age:<br> <input
+                    type='text' data-key='age' class='user-input'><br> email:<br> <input type='text' data-key='email'
+                    class='user-input'><br> <button type='button' id="add-user-btn">add user</button>
+                 </form>
+            </section>
+
+            <!-- edit user module -->
+            <section id="edit-user-module">
+                <form>
+                    <h2>Edit user</h2> <input type="hidden" class="edit-userid"> name:<br> <input type='text' data-key='name'
+                    class='edit-user-input'><br> age:<br> <input type='text' data-key='age' class='edit-user-input'><br>
+                    email:<br> <input type='text' data-key='email' class='edit-user-input'><br> <button type='button'
+                    id="edit-user-btn">save</button>
+                </form>
+            </section>
+        </div>
+
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <script src="/__/firebase/7.19.0/firebase-app.js"></script>
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+            https://firebase.google.com/docs/web/setup#available-libraries -->
+              
+         <!-- Add Firebase products that you want to use -->
+        <script src="/__/firebase/7.19.0/firebase-analytics.js"></script>
+        <script src="/__/firebase/7.19.0/firebase-auth.js"></script>
+        <script src="/__/firebase/7.19.0/firebase-database.js"></script>
+
+        <!-- Initialize Firebase -->
+        <script src="/__/firebase/init.js"></script>
+
+        <script type="text/javascript" src="js/main.js"></script>
+    </body>
+</html>
