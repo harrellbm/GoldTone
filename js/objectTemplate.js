@@ -1,98 +1,3 @@
-const moment = require('moment'); // For date handling 
-
-class initiativeCollection {
-   constructor() {
-      this.initiatives = new Map();
-   };
-   // Makes sure that the lowest possible id is assigned to a new avenue 
-   id_fill(objects){
-      let Id = 0;
-      let strId; // holds id that is converted to string
-      let has = true; // holds boolean for if object has key or not 
-      while(has == true){
-         strId = Id.toString(); // turn id to string so that it can be evaluated and possibly returned
-         if (objects.has(strId) == true){ // check to see if map has id or not
-            Id += 1;
-            } else { // when avenueId does not equal ave we know that the spot is empty
-               return strId;
-               }
-      }
-   };
-
-   // Add an Initative to the initatives map in the initiativeCollection 
-   add_initiative(name='', description='') {
-      let new_initiative = new Initiative();
-      new_initiative.name = name;
-      new_initiative.description = description;
-      
-      // groups, goals, messages, and avenues will be added after initialization 
-      
-      let initiativeId = this.id_fill(this.initiatives)// fill in the lowest available id
-      this.initiatives.set(initiativeId, new_initiative);
-      return initiativeId;
-      }
-
-   update_init(initId, ipc) {
-      let initiative = new Initiative();
-      initiative.unpack_from_ipc(ipc);
-      this.initiatives.set(initId, initiative);
-      //console.log('updated collection: ', this.initiatives);
-   }
-
-   update_mess(initId, messId, ipc) {
-      let initiative = this.initiatives.get(initId);
-      let message = initiative.messages.get(messId);
-      // Create message if it was not there before
-      let newMess;
-      if (message == undefined) {
-         newMess = new Message();
-         initiative.messages.set(messId, newMess);
-         message = initiative.messages.get(messId);
-      }
-      
-      message.change_title(ipc.title);
-      message.change_greeting(ipc.greeting);
-      message.change_content(ipc.content);
-      message.change_signature(ipc.signature);
-      //console.log('message in update method: ', message);
-   }
-   // Prepare initiative to be stringified for Json or sent over ipc by converting nonstandard objects
-   // Note: pack returns a new object that is packed and does not change the current collection
-   pack_for_file(){ // Note: dynamic test held in test_main.js, unit test in test_object_templates.js
-      // Create temporary collection 
-      var container = new initiativeCollection();
-      // Pack each initiative and put in the temporary collection
-      this.initiatives.forEach(function (initiative, key) {
-         let packed = initiative.pack_for_ipc();
-         container.initiatives.set(key, packed);
-      });
-      // Pack collection itself into a vanilla object  
-      let collection_for_ipc = new Object;
-      collection_for_ipc.initiatives = Object.fromEntries(container.initiatives); 
-      
-      return collection_for_ipc; // Returns the packaged collection  
-   }
-
-   // Unpack values passed in by Json format from saved file or ipc
-   // Note: unpack from file changed current collection to match incoming data
-   unpack_from_file( file ){ // Note: dynamic test held in test_main.js, unit test in test_object_templates.js
-      // Convert Initiatives back from saved vanilla object
-      this.initiatives = new Map(); 
-      // Reload each initiative into the collection's map 
-      let initiative;
-      for (initiative of Object.entries(file.initiatives)) { // Iterate over the key value pairs from the vanilla object
-         let id = initiative[0];
-         let content = initiative[1];
-         let unpacked = new Initiative(); // Create new Initiative object 
-         // Load all contents into the new Initiative object       
-         unpacked.unpack_from_ipc(content); // unpack all of the initiative's properties  
-         // Add the new Initiative object back to the collection
-         this.initiatives.set(id, unpacked); 
-         }
-      //console.log('new unpacked initiative: ', this.initiatives);
-   }
-};
-
 // Constructor for Initiative object.  Top tier data structure 
 class Initiative {
    constructor() {
@@ -443,69 +348,6 @@ class Initiative {
    };
 };
 
-class Group {
-   // Constructor takes new contacts in the form of [ [name, phone, email], etc. ]
-   // Note: Group has to be initialized with its respective id otherwise contact id tagging will not work correctly
-   constructor(group_id='', group_name='', new_contacts=[]) {
-      this.group_id = group_id;
-      this.group_name = group_name; // Name of the contact group 
-      this.contacts = new Map(); // Key is the name of individual, value is contact info
-      
-      let leng = new_contacts.length;
-      if (new_contacts != []) {
-         for (let i=0; i<leng; i++) {
-            this.add_contact(new_contacts[i][0], new_contacts[i][1], new_contacts[i][2]); // Note: argument order: ( Name, Phone , Email )
-         };
-      };
-   };
-   // Note: useful built in methods for maps: set(key, value), delete(key), get(key), has(key), clear()
-      // keys(), values(), entries(), forEach(), size
-   
-   // Changes the groups name 
-   change_group_name(new_name){ 
-      this.group_name = new_name;
-   };
-   
-   // Gets the groups name  
-   get_group_name(){
-      return this.group_name;
-   };
-
-   // Makes sure that the lowest possible id is assigned to a new contact 
-   contact_id_fill(objects){
-      let Id = 0;
-      let strId; // holds id that is converted to string
-      let has = true; // holds boolean for if object has key or not 
-      while(has == true){
-         strId = Id.toString(); // turn id to string so that it can be evaluated and possibly returned
-         let fullId = this.group_id + strId; // add the group id on front for full contact id
-         if (objects.has(fullId) == true){ // check to see if map has id or not
-            Id += 1;
-            } else { // when avenueId does not equal ave we know that the spot is empty
-               return strId;
-               }
-      }
-   };
-
-   // Add a contact to the contacts map  
-   add_contact(name='', phone='', email=''){ 
-      let contactId = this.contact_id_fill(this.contacts); // fill in the lowest available id
-      let id = this.group_id + contactId;
-      this.contacts.set(id, [name, phone, email]); // Use group id in front of contact id to make it unique 
-      return id;
-   };
-
-   pack_grp_for_ipc(){ // Note: dynamic test held in test_main.js, unit test in test_object_templates.js
-      // Pack group into a vanilla object 
-      let group_for_ipc = new Object;
-      group_for_ipc.group_id = this.group_id;
-      group_for_ipc.group_name = this.group_name;
-      group_for_ipc.contacts = Object.fromEntries(this.contacts); 
-      //console.log('packed group', group_for_ipc);
-      return group_for_ipc; // Returns the packaged group  
-   };
-};
-
 class Goal {
    constructor() {
       // Frequency is going to eventually be some kind of date object to tell how often to schedule this communication
@@ -568,92 +410,22 @@ class Goal {
       return this.description;
    };
 };
-
-class Message {
-   constructor () {
-      // Avenue ids holds the ids of the avenues that are associated with this message
-         // Only one message is allowed for each avenue, but you can add multiple avenues to a message
-      this.title = '';
-      this.greeting = '';
-      this.content = '';
-      this.signature ='';
-      this.avenue_ids = [];
-      }
-   
-   // Changes the title for the given message    
-   change_title(new_title){
-      this.title = new_title;
-      }
-   
-   // Returns the title for the given message
-   get_title(){
-      return this.title;
-      }
-   
-   // Changes the greeting for the given message    
-   change_greeting(new_greeting){
-      this.greeting = new_greeting;
-      }
-
-   // Returns the greeting for the given message
-   get_greeting(){
-      return this.greeting;
-      }
-
-   // Changes the content for the given message    
-   change_content(new_content){ 
-      this.content = new_content;
-      }
-   
-   // Returns the content for the given message
-   get_content(){
-      return this.content;
-      }
-
-   // Changes the signature for the given message    
-   change_signature(new_signature){ 
-      this.signature = new_signature;
-      }
-   
-   // Returns the signature for the given message
-   get_signature(){
-      return this.signature;
-      }
-   
-   // Completely writes over current values in avenue ids 
-   change_avenue_id(new_id){   // TODO: need data validation
-      this.avenue_ids = [new_id];
-      }
-
-   // Adds an avenue id to the list of ids for this message
-   add_avenue_id(new_id){  // TODO: need data validation
-      this.avenue_ids.push(new_id);
-      }
-   
-   // Returns the list of avenue ids as an array
-   get_avenue_ids(){  
-         return this.avenue_ids;
-      }
-
-   // Clears all avenue ids for this message 
-   clear_avenue_ids(){
-      this.avenue_ids = [];
-      }
-};
  
-class Avenue {
+class Communication {
    constructor() {
-      // date is a built in data object only one date is assigned per avenue
-      // Sent is whether the message is sent or not
+      // date is stored as a simple string and converted to a moment object when manipulated client side
+      // Sent is whether the message is in progress, sent, or not.
       // Message id holds the id of the message that is associated with this avenue 
          //Only one message is allowed for each avenue, but you can add multiple avenues to a message
-      this.avenue_type = '';
-      this.description = '';
-      this.person = [];
+      this.com_type = '';
+      this.subject = '';
+      this.to_whom = '';
+      this.from_whom = '';
       this.date = ''; // Only one date 
-      this.sent = false;
-      this.message_id = ''; // Only one message id
-      this.goal_id = ''; // Only one goal id
+      this.sent = ''; // Can be inProgress, sent, or not
+      this.goal_key = ''; // Only one goal id
+      this.reminder_keys = [];
+      
    };
    
    // Completely writes over current avenue type 
@@ -753,31 +525,3 @@ class Avenue {
       this.goal_id = '';
    };
 };
-
-module.exports = {
-   initiativeCollection,
-   Initiative,
-   Group,
-   Goal,
-   Message,
-   Avenue
-}
-
-/*
-     compose_message_for_avenue(self, avenue){
-        // TODO: finish compose message for avenue
-        // finsh get avenue will make this step a lot easier
-        // print(self.message_dict.keys())
-        // print(self.message_dict[avenue])
-        for date in self.message_dict[avenue]['date']:
-            composed_message = {date: self.message_dict['title']}
-            // print(composed_message)
-            // self.message_dict
-        //
-        // add method to compose message into single string call it "Compose for Avenue" that takes  a Message and Avenue
-        // then pulls unique greeting and signature oF applicable and puts it all into a condensed dictionary
-     }
-
-class Profile{
-     constructor(){}
-    }*/
