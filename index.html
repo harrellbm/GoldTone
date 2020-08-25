@@ -28,17 +28,24 @@
                 <div id="goal-toolbar">
                     <p>Goals</p>
                     <div style="width: 25px; height: 25px;">
-                        <svg  id="add-goal" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <svg  id="add-goal-btn" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd" d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"/>
                         </svg>
                     </div>
+                    <span>Sort</span>
                 </div>
                 <div id="goal-in">goals will go here</div>
             </section>
             <!-- Communications section -->
             <section id="comm-sec">
                 <div id="comm-toolbar">
-                    <p>Communications</p>
+                    <p>Dispatch</p>
+                    <div style="width: 25px; height: 25px;">
+                        <svg  id="add-comm-btn" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"/>
+                        </svg>
+                    </div>
+                    <span>Sort</span>
                 </div>
                 <div id="comm-in">communications will go here</div>
                 <div id="rem-in"></div>
@@ -53,6 +60,49 @@
                     class='user-input'><br> <button type='button' id="add-user-btn">add user</button>
                  </form>
             </section>
+
+             <!-- Modal for adding communication -->
+            <div id="comm-modal">
+                <div id="comm-id" style="position: fixed; display: none;"></div>
+                <div id="linked-goal-id" style="position: fixed; display: none;"></div>
+                <div id="linked-reminders-id" style="position: fixed; display: none;"></div>
+                <!-- Modal content -->
+                <div class="comm-modal-content">
+                    <span class="close">&times;</span>
+                    <div>
+                        <label for="comm-type-modal">Type</label>
+                        <select id="comm-type-modal"></select>
+                    </div>
+                    <div>
+                        <label for="comm-subject-modal">Subject</label>
+                        <textarea id="comm-subject-modal"></textarea>  
+                    </div>
+                    <div>
+                        <label for="comm-to-whom-modal">To</label>
+                        <textarea id="comm-to-whom-modal"></textarea>  
+                    </div>
+                    <div>
+                        <label for="comm-from-whom-modal">From</label>
+                        <textarea id="comm-from-whom-modal"></textarea>  
+                    </div>
+                    <div>
+                        <label for="comm-date-modal">From</label>
+                        <input id="comm-date-modal" type="date"></input>  
+                    </div>
+                    <div>
+                        <label for="comm-sent-modal">From</label>
+                        <select id="comm-sent-modal">
+                            <option>yes</option>
+                            <option>no</option>
+                            <option>in progress</option>
+                        </select> 
+                    </div>
+                    <div id="comm-btns"> 
+                        <input id="comm-save-modal" class="button" type="button"  value="Save"> 
+                        <input id="comm-delete-modal" class="button" type="button"  value="Delete">
+                    </div>
+                </div>
+            </div>
 
             <!-- edit user module -->
             <section id="edit-user-module">

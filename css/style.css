@@ -38,8 +38,8 @@ p {
     color: var(--base-text-color);
     text-align: center;
     background-color: var(--base-bg-color);
-    margin: 0px;
-    font-size: 1.15rem;
+    margin: auto;
+    font-size: 1.5rem;
     text-shadow: var(--base-text-shadow);
 }
   
@@ -79,61 +79,183 @@ textarea {
     justify-content: center;
 }
 
+
 #goal-in {
-    height: 200px;
+    min-height: 200px;
     border-width: var(--base-border-width);
     border-style: var(--base-border-style);
     border-color: var(--base-border-color);
+}
+
+#comm-toolbar {
+    display:flex;
+    justify-content: center;
 }
 
 #comm-in {
-    height: 200px;
+    min-height: 200px;
     border-width: var(--base-border-width);
     border-style: var(--base-border-style);
     border-color: var(--base-border-color);
 }
 
-/* Add User Module */
-#add-user-module {
-    width: 30px;
-    margin-bottom: 1px;
-    margin-left: 10px;
-    margin-top: 10px;
+/* Add button styling */
+#add-comm-btn,
+#add-goal-btn {
+    fill: rgb(255, 255, 255);
+    border-radius: 50%;
+    transition: background-color 0.1s;
+}
+    
+#add-comm-btn:hover,
+#add-goal-btn:hover {
+    fill: var(--base-hover-color);
+    background-color: rgb( 118, 118, 118);
+    text-decoration: none;
+    cursor: pointer;
 }
 
-#add-user-module #open-add-user-form-btn {
-    background: #54bb7d;
-    font-size: 1.5em;
-    color: white;
-    padding-bottom: 5px;
+#add-comm-btn:active,
+#add-goal-btn:active {
+    fill:  rgb(255, 255, 255);
 }
 
-#add-user-module form {
-    position: absolute;
-    padding: 10px;
-    width: 150px;
-    background-color: #e1e1e1;
-    border: 1px solid #999;
-    display: none;
-}
+/* ---- Modal for adding avenues ---- */
+  /* The Modal (background) */
+  #comm-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
 
-#add-user-module form input {
-    width: 97%;
-    margin: 2px 0;
-}
+  /* Modal Content/Box */
+  .comm-modal-content {
+    background-color: var(--workspace-bg-color);
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 15px;
+    border: 1px solid rgb(118, 118, 118);
+    width: 90%; /* Could be more or less, depending on screen size */
+    border-radius: 5px; /* Round corners */
+  }
 
-#add-user-module form button {
-    background: #54bb7d;
-    font-size: 1em;
-    padding: 0px 10px;
-    color: white;
-    margin-top: 10px;
-}
+  /* elements with rounded corners within main box */
+  #aveDropModal {
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+    border-radius: 4px 0px 0px 0px;
+    border-width: 1px 1px 0px 1px;
+    cursor: pointer;
+    background-color: var(--workspace-bg-color);
+  }
 
-#add-user-module:hover form {
-    display: block;
-}
+    /* Extra rules for aves that are linked to goals */
+    /*#aveDropModal:disabled {
+      opacity: 1;
+      color: black;
+      cursor: not-allowed;
+    }*/
 
+  #avePersTitle {
+    border-radius: 0px 4px 0px 0px;
+    border-width: 1px 1px 0px 0px;
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+  }
+
+  #aveDateTitle {
+    border-width: 1px 0px 0px 1px;
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+  }
+ 
+  #aveDescTitle {
+    border-width: 1px 0px 0px 0px;
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+  }
+
+  #aveDescModal {
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+  }
+
+    /* Extra rules for aves that are linked to goals */
+    #aveDescModal:read-only {
+      cursor: not-allowed;
+    }
+
+    #aveDescModal:read-only:focus {
+      outline: none;
+    }
+   
+  #avePersModal {
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+    border-radius: 0px 0px 4px 0px;
+  }
+
+  #modalSentBox {
+    border-radius: 0px 0px 0px 4px;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    padding: 0.5rem;
+    border-width: var(--base-border-width);
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+    cursor: default;
+  }
+
+  #aveSentModal {
+    background-color: var(--workspace-bg-color);
+  }
+
+  #aveSentModal:hover,
+  #aveSentModal:focus {
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
+  /* Change datechooser boarder to match other inputs */
+  #aveDateModal {
+    border-width: var(--base-border-width);
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+    background-color: var(--workspace-bg-color);
+  }
+
+   /* Extra rules for aves that are linked to goals */
+   #aveDateModal:read-only {
+      cursor: not-allowed;
+    }
+
+    #aveDateModal:read-only:focus {
+      outline: none;
+    }
+
+  /* Holds save and delete button for popup */ 
+  #aveBtns {
+    grid-row-start: 3;
+    grid-row-end: 4;
+    grid-column-start: 1;
+    grid-column-end: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #aveSaveModal {
+    flex-grow: 0.4;
+  }
 
 /*Edit*/
 #edit-user-module {
