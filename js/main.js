@@ -1,6 +1,5 @@
-console.log("firebase object", firebase);
-
-/* basic service worker will worry about this later 
+console.log("template object", Initiative, Communication, Goal);
+/* basic service worker, will worry about this later 
 window.onload = () => {
     'use strict';
 
@@ -11,17 +10,66 @@ window.onload = () => {
 } */
 
 const dbRef = firebase.database().ref();
-const usersRef = dbRef.child('users');
+const comRef = dbRef.child('communications');
+const remRef = dbRef.child('reminders');
 const userListUI = document.getElementById("userList");
 
-usersRef.on("child_added", snap => {
+/* Access Communications Document */
+comRef.on("child_added", snap => {
 
-	let user = snap.val();
+    let communication = snap.val();
+    console.log("database snapshot of communications", communication);
 
 	let $li = document.createElement("li");
-	$li.innerHTML = user.name;
+	$li.innerHTML = communication.type;
 	$li.setAttribute("child-key", snap.key);
-	$li.addEventListener("click", userClicked);
+	$li.addEventListener("click", comClicked);
+    // edit icon 
+    let editIconUI = document.createElement("span");
+    editIconUI.class = "edit-user";
+    editIconUI.innerHTML = " ✎";
+    editIconUI.setAttribute("userid", snap.key);
+    editIconUI.addEventListener("click", editButtonClicked) // Append after li.innerHTML = value.name 
+    $li.append(editIconUI);
+    // delete icon 
+    let deleteIconUI = document.createElement("span");
+    deleteIconUI.class = "delete-user";
+    deleteIconUI.innerHTML = " ☓";
+    deleteIconUI.setAttribute("userid", snap.key);
+    deleteIconUI.addEventListener("click", deleteButtonClicked) 
+    $li.append(deleteIconUI);
+
+    userListUI.append($li);
+});
+
+function comClicked(e) {
+
+	var userID = e.target.getAttribute("child-key");
+
+	const comRef = dbRef.child('communications/' + userID);
+	const commInUI = document.getElementById("comm-in");
+
+	commInUI.innerHTML = ""
+
+	comRef.on("child_added", snap => {
+
+		var $p = document.createElement("p");
+		$p.innerHTML = snap.key  + " - " +  snap.val()
+		commInUI.append($p);
+
+	});
+
+}
+/* Access reminders document */
+remRef.on("child_added", snap => {
+
+	let reminder = snap.val();
+    console.log("database snapshot of reminders", reminder);
+
+	let $li = document.createElement("li");
+	$li.innerHTML = reminder.time_before;
+	$li.setAttribute("child-key", snap.key);
+	$li.addEventListener("click", remClicked);
     // edit icon 
     let editIconUI = document.createElement("span");
     editIconUI.class = "edit-user";
@@ -41,20 +89,20 @@ usersRef.on("child_added", snap => {
 });
 
 
-function userClicked(e) {
+function remClicked(e) {
 
 	var userID = e.target.getAttribute("child-key");
 
-	const userRef = dbRef.child('users/' + userID);
-	const userDetailUI = document.getElementById("userDetail");
+	const remRef = dbRef.child('reminders/' + userID);
+	const remInUI = document.getElementById("rem-in");
 
-	userDetailUI.innerHTML = ""
+	remInUI.innerHTML = ""
 
-	userRef.on("child_added", snap => {
+	remRef.on("child_added", snap => {
 
 		var $p = document.createElement("p");
 		$p.innerHTML = snap.key  + " - " +  snap.val()
-		userDetailUI.append($p);
+		remInUI.append($p);
 
 	});
 
