@@ -1,4 +1,3 @@
-console.log("template object", Initiative, Communication, Goal);
 /* basic service worker, will worry about this later 
 window.onload = () => {
     'use strict';
@@ -127,7 +126,7 @@ function addCommModalLaunch (calEvent='', launchType='') {
 // Get the save button from modal 
 document.getElementById('comm-save-modal').addEventListener("click", commModalSave );
       
-// Save contents from the modal. Then update Initiative object, Message Manager tab and Initiative tab
+// Save contents from the modal. Then update database, and UI
 function commModalSave (){
   const commId = document.getElementById("comm-id");
   const goalId = document.getElementById("linked-goal-id");
@@ -138,65 +137,64 @@ function commModalSave (){
   const fromWhom = document.getElementById("comm-from-whom-modal");
   const date = document.getElementById("comm-date-modal");
   const sent = document.getElementById("comm-sent-modal");
+  // Grab reference to database document
+  const comRef = dbRef.child('communications');
   console.log('type', type.value, '\nsubject', subject.value, '\nto whom', toWhom.value, '\nfrom whom', fromWhom.value, '\ndate', date.value, '\nsent', sent.value);
   // Make sure date and description are filled out 
   if (date.value != '' && subject.value != ''){
     // Turn date into moment object to format for adding or updating avenue in initiative object and ui
     let momDate = moment(date.value, 'YYYY-MM-DD', true); 
     // If no id provided assume this is a new communication
-          if (commId.value == '' || commId.value == undefined ){
-            // Add avenue to initiative object, initative tab and message manager tab. 
-            addAve('modalAdd', '', 'avenueIn', sent.checked, type.value, description.value, person.value, momDate.toString()); // use Moment date format
-             // Save everything to main
-             let ipcInit = currentInitiative.pack_for_ipc();
-             ipc.send('save', currentInitiativeId, ipcInit);
-          } else {
-            // Update Initiative object 
-            let initAve = currentInitiative.avenues.get(aveId.value); // Avenue object from the initiative object
-            initAve.avenue_type = type.value;
-            initAve.sent = sent.checked;
-            initAve.description = description.value;
-            initAve.person = person.value;
-            initAve.change_date(momDate.toString());
-            // Update Message manager tab
-            let guiAve = document.getElementById(`avenue${aveId.value}`); // Avenue object from the ui
-          
-            guiAve.children[0].value = type.value; // Type
-            guiAve.children[4].children[0].checked = sent.checked; // Sent
-            guiAve.children[5].value = description.value; // Description
-            guiAve.children[6].value = person.value; // Person
-            guiAve.children[7].value = momDate.format('YYYY-MM-DD');
-            // Update Schedule object on calendar 
-            calendar.updateSchedule(aveId.value, '1', {
-              title: description.value,
-              start: momDate.format('ddd DD MMM YYYY HH:mm:ss'),
-              end:  momDate.format('ddd DD MMM YYYY HH:mm:ss')
-            });
-            // Save everything to main
-            let ipcInit = currentInitiative.pack_for_ipc();
-            ipc.send('save', currentInitiativeId, ipcInit);
-          };
-          // Close modal
-          commModalUI.style.display = "none";
-          // Reset modal
-          sent.checked = false;
-          let i, L= type.options.length - 1;
-          for(i = L; i >= 0; i--) {
-            type.remove(i);
-          };
-          date.value = ''; 
-          description.value = '';
-          person.value = '';
-          aveId.value = '';
-          // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
-          date.style.backgroundColor = 'rgb(245, 245,230)';
-          description.style.backgroundColor = 'rgb(245, 245,230)';
-          // Reset modal if it was opened from an avenue connected with a goal 
-          type.disabled = false;
-          description.readOnly = false;
-          date.readOnly = false;
-          document.getElementById('aveDeleteModal').style.display = "block";
-          document.getElementById('aveDeleteModal').style.position = "initial";
+    if (commId.value == '' || commId.value == undefined ){
+      // New Communication object 
+      const newComm = new Communication(type.value, subject.value, toWhom.value, fromWhom.value, momDate.toString(), sent.value, goalId.value, remId.value); // Convert date to String to preserve timezone
+      console.log("new communication", newComm);
+      // Add communication to database 
+      comRef.push(newComm, function () {
+        console.log("data has been inserted");
+      });
+    } else {
+      // Update communication in database 
+      const commRef = dbRef.child('communications/' + commId.value);
+      // set data to the user field 
+      const comInputsUI = document.getElementsByClassName("comm-modal-input");
+      commRef.on("value", snap => {
+        for (var i = 0, len = omInputsUI.length; i < len; i++) {
+            var key = omInputsUI[i].getAttribute("data-key");
+            omInputsUI[i].value = snap.val()[key];
+        }
+      }); 
+      // Update Schedule object on calendar 
+      calendar.updateSchedule(aveId.value, '1', {
+        title: description.value,
+        start: momDate.format('ddd DD MMM YYYY HH:mm:ss'),
+        end:  momDate.format('ddd DD MMM YYYY HH:mm:ss')
+      });
+    }; 
+    // Close modal
+    commModalUI.style.display = "none";
+    // Reset modal
+    commId.value = '';
+    goalId.value = '';
+    remId.value = '';
+    let i, L= type.options.length - 1;
+    for(i = L; i >= 0; i--) {
+      type.remove(i);
+    };
+    subject.value = '';
+    toWhom.value = '';
+    fromWhom.value = '';
+    date.value = '';
+    sent.options.selectedIndex = 0;       
+    // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
+    date.style.backgroundColor = 'rgb(245, 245,230)';
+    subject.style.backgroundColor = 'rgb(245, 245,230)';
+    // Reset modal if it was opened from an avenue connected with a goal 
+    /*type.disabled = false;
+    description.readOnly = false;
+    date.readOnly = false;
+    document.getElementById('aveDeleteModal').style.display = "block";
+    document.getElementById('aveDeleteModal').style.position = "initial";*/
   } else { // Change backgroup of date or description if not filled out 
       if (date.value == ''){
         date.style.backgroundColor = 'rgb(225, 160, 140)';
@@ -212,119 +210,164 @@ document.getElementById('comm-delete-modal').addEventListener("click", commModal
   
 // Delete contents from the modal. Then update Initiative object, Message Manager tab and Initiative tab
 function commModalDelete (){
-  swal({
-    title: 'Deleting Avenue',
-    text: 'Are you sure you want to delete your Avenue?', 
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You won\'t be able to undo this!?', 
     icon: 'warning',
-    buttons: ['Cancel', 'Yes'],
-    dangerMode: true
+    showCancelButton: true,
+    confirmButtonColor: '#8bcbe0',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, Cancel!',
+    cancelButtonColor: '#d33'
   })
   .then(function (value) {
-    if (value == null) { // Escape deletion 
+    if (value.isConfirmed == false) { // Escape deletion 
       return
     } else { // Proceed with deletion 
       // Get id from DOM
-      let aveId = document.getElementById('aveIdModal');
+      const commId = document.getElementById("comm-id");
       // Remove avenue from message manager UI
-      let messAve = document.getElementById(`avenue${aveId.value}`);
-      messAve.parentElement.removeChild(messAve);
+      /*let messAve = document.getElementById(`avenue${aveId.value}`);
+      messAve.parentElement.removeChild(messAve);*/
       // Delete Schedule object on calendar 
-      calendar.deleteSchedule(aveId.value, '1');
-      // Remove avenue from Initiative object 
-      let id = aveId.value;
-      currentInitiative.avenues.delete(id); // Take only the number off of the end of the ui id
-      // Send updates to main
-      let ipcInit = currentInitiative.pack_for_ipc();
-      ipc.send('save', currentInitiativeId, ipcInit);
-        
-      // Close modal
-      commModalUI.style.display = "none";
-      // Reset modal
-      aveId.value = '';
-      document.getElementById('aveSentModal').checked = false; // Sent
-      let types = document.getElementById('aveDropModal'); // Type
-      let i, L= types.options.length - 1;
-      for(i = L; i >= 0; i--) {
-        types.remove(i);
-      };
-      document.getElementById('avePersModal').value = ''; // Person
-      document.getElementById('aveDateModal').value = ''; // Date Value
-      document.getElementById('aveDescModal').value = ''; // Description Value
-      // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
-      document.getElementById('aveDateModal').style.backgroundColor = 'rgb(245, 245,230)'; // Date Style
-      document.getElementById('aveDescModal').style.backgroundColor = 'rgb(245, 245,230)'; // Description Style
-      return
+      /*calendar.deleteSchedule(aveId.value, '1');*/
+      
+      // Remove communication from database 
+      const commRef = dbRef.child('users/' + commId);
+      commRef.remove();
+      
+    // Close modal
+    commModalUI.style.display = "none";
+    
+    // Get modal fields
+    const goalId = document.getElementById("linked-goal-id");
+    const remId = document.getElementById("linked-reminders-id");
+    const type = document.getElementById("comm-type-modal");
+    const subject = document.getElementById("comm-subject-modal");
+    const toWhom = document.getElementById("comm-to-whom-modal");
+    const fromWhom = document.getElementById("comm-from-whom-modal");
+    const date = document.getElementById("comm-date-modal");
+    const sent = document.getElementById("comm-sent-modal");
+     
+    // Reset modal
+    commId.value = '';
+    goalId.value = '';
+    remId.value = '';
+    let i, L= type.options.length - 1;
+    for(i = L; i >= 0; i--) {
+      type.remove(i);
+    };
+    subject.value = '';
+    toWhom.value = '';
+    fromWhom.value = '';
+    date.value = '';
+    sent.options.selectedIndex = 0;       
+    // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
+    date.style.backgroundColor = 'rgb(245, 245,230)';
+    subject.style.backgroundColor = 'rgb(245, 245,230)';
+    // Reset modal if it was opened from an communication connected with a goal 
+    /*type.disabled = false;
+    description.readOnly = false;
+    date.readOnly = false;
+    document.getElementById('aveDeleteModal').style.display = "block";
+    document.getElementById('aveDeleteModal').style.position = "initial";*/
+    return
     }; 
   });
 };
 
 // Get the <span> element that closes the modal and attach listener
 document.getElementsByClassName("close")[0].addEventListener("click", function() {
+  // Close modal
   commModalUI.style.display = "none";
+  
   // Refresh calendar 
   //calendar.render();
+
+  // Get modal fields
+  const commId = document.getElementById("comm-id");
+  const goalId = document.getElementById("linked-goal-id");
+  const remId = document.getElementById("linked-reminders-id");
+  const type = document.getElementById("comm-type-modal");
+  const subject = document.getElementById("comm-subject-modal");
+  const toWhom = document.getElementById("comm-to-whom-modal");
+  const fromWhom = document.getElementById("comm-from-whom-modal");
+  const date = document.getElementById("comm-date-modal");
+  const sent = document.getElementById("comm-sent-modal");
+   
   // Reset modal
-  let sent = document.getElementById('aveSentModal');
-  let type = document.getElementById('aveDropModal');
-  let date = document.getElementById('aveDateModal');
-  let description = document.getElementById('aveDescModal');
-  let person = document.getElementById('avePersModal');
-  let aveId = document.getElementById('aveIdModal');
-  sent.checked = false;
+  commId.value = '';
+  goalId.value = '';
+  remId.value = '';
   let i, L= type.options.length - 1;
   for(i = L; i >= 0; i--) {
     type.remove(i);
   };
-  date.value = ''; 
-  description.value = '';
-  person.value = '';
-  aveId.value = '';
+  subject.value = '';
+  toWhom.value = '';
+  fromWhom.value = '';
+  date.value = '';
+  sent.options.selectedIndex = 0;       
   // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
   date.style.backgroundColor = 'rgb(245, 245,230)';
-  description.style.backgroundColor = 'rgb(245, 245,230)';
-  // Reset modal if it was opened from an avenue connected with a goal 
-  type.disabled = false;
+  subject.style.backgroundColor = 'rgb(245, 245,230)';
+  // Reset modal if it was opened from an communication connected with a goal 
+  /*type.disabled = false;
   description.readOnly = false;
   date.readOnly = false;
   document.getElementById('aveDeleteModal').style.display = "block";
-  document.getElementById('aveDeleteModal').style.position = "initial";
+  document.getElementById('aveDeleteModal').style.position = "initial";*/
 });
 
 // When the user clicks anywhere outside of the modal, close it
 window.addEventListener('click', function(event) {
   if (event.target == commModalUI) {
+    // Close modal
     commModalUI.style.display = "none";
+  
     // Refresh calendar 
     //calendar.render();
+
+    // Get modal fields
+    const commId = document.getElementById("comm-id");
+    const goalId = document.getElementById("linked-goal-id");
+    const remId = document.getElementById("linked-reminders-id");
+    const type = document.getElementById("comm-type-modal");
+    const subject = document.getElementById("comm-subject-modal");
+    const toWhom = document.getElementById("comm-to-whom-modal");
+    const fromWhom = document.getElementById("comm-from-whom-modal");
+    const date = document.getElementById("comm-date-modal");
+    const sent = document.getElementById("comm-sent-modal");
+   
     // Reset modal
-    let sent = document.getElementById('aveSentModal');
-    let type = document.getElementById('aveDropModal');
-    let date = document.getElementById('aveDateModal');
-    let description = document.getElementById('aveDescModal');
-    let person = document.getElementById('avePersModal');
-    let aveId = document.getElementById('aveIdModal');
-    sent.checked = false;
+    commId.value = '';
+    goalId.value = '';
+    remId.value = '';
     let i, L= type.options.length - 1;
     for(i = L; i >= 0; i--) {
       type.remove(i);
     };
-    date.value = ''; 
-    description.value = '';
-    person.value = '';
-    aveId.value = '';
+    subject.value = '';
+    toWhom.value = '';
+    fromWhom.value = '';
+    date.value = '';
+    sent.options.selectedIndex = 0;       
     // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
     date.style.backgroundColor = 'rgb(245, 245,230)';
-    description.style.backgroundColor = 'rgb(245, 245,230)';
-    // Reset modal if it was opened from an avenue connected with a goal 
-    type.disabled = false;
+    subject.style.backgroundColor = 'rgb(245, 245,230)';
+    // Reset modal if it was opened from an communication connected with a goal 
+    /*type.disabled = false;
     description.readOnly = false;
     date.readOnly = false;
     document.getElementById('aveDeleteModal').style.display = "block";
-    document.getElementById('aveDeleteModal').style.position = "initial";
+    document.getElementById('aveDeleteModal').style.position = "initial";*/
   };
 });  
 
 
+
+
+/* Example functions from tutoral, need removed later */
 function addCommBtnClicked() {
     const comRef = dbRef.child('communications');
     const addComInputsUI = document.getElementsByClassName("user-input");
@@ -360,6 +403,7 @@ function editButtonClicked (e) {
 
 const saveBtn = document.querySelector("#edit-user-btn"); 
 saveBtn.addEventListener("click", saveUserBtnClicked);
+
 
 function saveUserBtnClicked() {
     const userID = document.querySelector(".edit-userid").value;

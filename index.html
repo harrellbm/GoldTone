@@ -50,17 +50,7 @@
                 <div id="comm-in">communications will go here</div>
                 <div id="rem-in"></div>
             </section>
-            <ul id="userList"></ul>
             
-            <!-- add user module -->
-            <section id="add-user-module"> <button id="open-add-user-form-btn">+</button>
-                <form>
-                    <h2>Add User</h2> name:<br> <input type='text' data-key='name' class='user-input'><br> age:<br> <input
-                    type='text' data-key='age' class='user-input'><br> email:<br> <input type='text' data-key='email'
-                    class='user-input'><br> <button type='button' id="add-user-btn">add user</button>
-                 </form>
-            </section>
-
              <!-- Modal for adding communication -->
             <div id="comm-modal">
                 <div id="comm-id" style="position: fixed; display: none;"></div>
@@ -71,30 +61,30 @@
                     <span class="close">&times;</span>
                     <div>
                         <label for="comm-type-modal">Type</label>
-                        <select id="comm-type-modal"></select>
+                        <select id="comm-type-modal" class="comm-modal-input"></select>
                     </div>
                     <div>
                         <label for="comm-subject-modal">Subject</label>
-                        <textarea id="comm-subject-modal"></textarea>  
+                        <textarea id="comm-subject-modal" class="comm-modal-input"></textarea>  
                     </div>
                     <div>
                         <label for="comm-to-whom-modal">To</label>
-                        <textarea id="comm-to-whom-modal"></textarea>  
+                        <textarea id="comm-to-whom-modal" class="comm-modal-input"></textarea>  
                     </div>
                     <div>
                         <label for="comm-from-whom-modal">From</label>
-                        <textarea id="comm-from-whom-modal"></textarea>  
+                        <textarea id="comm-from-whom-modal" class="comm-modal-input"></textarea>  
                     </div>
                     <div>
-                        <label for="comm-date-modal">From</label>
-                        <input id="comm-date-modal" type="date"></input>  
+                        <label for="comm-date-modal">Date</label>
+                        <input id="comm-date-modal" class="comm-modal-input" type="date"></input>  
                     </div>
                     <div>
                         <label for="comm-sent-modal">From</label>
-                        <select id="comm-sent-modal">
-                            <option>yes</option>
+                        <select id="comm-sent-modal" class="comm-modal-input">
                             <option>no</option>
                             <option>in progress</option>
+                            <option>yes</option>
                         </select> 
                     </div>
                     <div id="comm-btns"> 
@@ -103,6 +93,9 @@
                     </div>
                 </div>
             </div>
+
+
+            <ul id="userList"></ul>
 
             <!-- edit user module -->
             <section id="edit-user-module">
@@ -131,6 +124,7 @@
 
         <!-- 3rd Party libaries and dependencies -->
         <script src="node_modules/moment/moment.js"></script>
+        <script src="node_modules/sweetalert2/dist/sweetalert2.all.min.js"></script>
 
         <!-- Application Scripts -->
         <script src="js/objectTemplate.js"></script>

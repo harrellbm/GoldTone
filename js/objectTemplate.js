@@ -412,20 +412,20 @@ class Goal {
 };
  
 class Communication {
-   constructor() {
+   constructor( com_type='', subject = '', to_whom = '', from_whom = '', date = '', sent = '',
+               goal_key = '', reminder_keys = []) {
       // date is stored as a simple string and converted to a moment object when manipulated client side
       // Sent is whether the message is in progress, sent, or not.
       // Message id holds the id of the message that is associated with this avenue 
          //Only one message is allowed for each avenue, but you can add multiple avenues to a message
-      this.com_type = '';
-      this.subject = '';
-      this.to_whom = '';
-      this.from_whom = '';
-      this.date = ''; // Only one date 
-      this.sent = ''; // Can be inProgress, sent, or not
-      this.goal_key = ''; // Only one goal id
-      this.reminder_keys = [];
-      
+      this.com_type = com_type;
+      this.subject = subject;
+      this.to_whom = to_whom;
+      this.from_whom = from_whom;
+      this.date = date; // Only one date 
+      this.sent = sent; // Can be inProgress, sent, or not
+      this.goal_key = goal_key; // Only one goal id
+      this.reminder_keys = reminder_keys;
    };
    
    // Completely writes over current avenue type 
