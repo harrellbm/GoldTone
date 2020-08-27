@@ -201,26 +201,7 @@ function commModalSave (){
     }; 
     // Close modal
     commModalUI.style.display = "none";
-    // Reset modal
-    commId.value = '';
-    goalId.value = '';
-    remId.value = '';
-    type.options.selectedIndex = 0;
-    subject.value = '';
-    toWhom.value = '';
-    fromWhom.value = '';
-    date.value = '';
-    sent.options.selectedIndex = 0;       
-    // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
-    date.style.backgroundColor = 'rgb(245, 245,230)';
-    subject.style.backgroundColor = 'rgb(245, 245,230)';
-    // Resent delete button if hidden when launching modal from add button
-    document.getElementById('comm-delete-modal').style.display = "block";
-    document.getElementById('comm-delete-modal').style.position = "initial";
-    // Reset modal if it was opened from an avenue connected with a goal 
-    /*type.disabled = false;
-    description.readOnly = false;
-    date.readOnly = false;*/
+    resetModal();
   } else { // Change backgroup of date or description if not filled out 
       if (date.value == ''){
         date.style.backgroundColor = 'rgb(225, 160, 140)';
@@ -230,83 +211,8 @@ function commModalSave (){
       };
   };
 };
-    
-// Get the delete button from modal 
-document.getElementById('comm-delete-modal').addEventListener("click", commModalDelete );
-  
-// Delete contents from the modal. Then update Initiative object, Message Manager tab and Initiative tab
-function commModalDelete (){
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'You won\'t be able to undo this!?', 
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#8bcbe0',
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'No, Cancel!',
-    cancelButtonColor: '#d33'
-  })
-  .then(function (value) {
-    if (value.isConfirmed == false) { // Escape deletion 
-      return
-    } else { // Proceed with deletion 
-      // Get id from DOM
-      const commId = document.getElementById("comm-id");
-      // Remove avenue from message manager UI
-      /*let messAve = document.getElementById(`avenue${aveId.value}`);
-      messAve.parentElement.removeChild(messAve);*/
-      // Delete Schedule object on calendar 
-      /*calendar.deleteSchedule(aveId.value, '1');*/
-      
-      // Remove communication from database 
-      const commRef = dbRef.child('users/' + commId);
-      commRef.remove();
-      
-    // Close modal
-    commModalUI.style.display = "none";
-    
-    // Get modal fields
-    const goalId = document.getElementById("linked-goal-id");
-    const remId = document.getElementById("linked-reminders-id");
-    const type = document.getElementById("comm-type-modal");
-    const subject = document.getElementById("comm-subject-modal");
-    const toWhom = document.getElementById("comm-to-whom-modal");
-    const fromWhom = document.getElementById("comm-from-whom-modal");
-    const date = document.getElementById("comm-date-modal");
-    const sent = document.getElementById("comm-sent-modal");
-     
-    // Reset modal
-    commId.value = '';
-    goalId.value = '';
-    remId.value = '';
-    let i, L= type.options.length - 1;
-    for(i = L; i >= 0; i--) {
-      type.remove(i);
-    };
-    subject.value = '';
-    toWhom.value = '';
-    fromWhom.value = '';
-    date.value = '';
-    sent.options.selectedIndex = 0;       
-    // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
-    date.style.backgroundColor = 'rgb(245, 245,230)';
-    subject.style.backgroundColor = 'rgb(245, 245,230)';
-    // Reset modal if it was opened from an communication connected with a goal 
-    /*type.disabled = false;
-    description.readOnly = false;
-    date.readOnly = false;
-    document.getElementById('aveDeleteModal').style.display = "block";
-    document.getElementById('aveDeleteModal').style.position = "initial";*/
-    return
-    }; 
-  });
-};
 
-// Get the <span> element that closes the modal and attach listener
-document.getElementsByClassName("close")[0].addEventListener("click", function() {
-  // Close modal
-  commModalUI.style.display = "none";
-  
+function resetModal () {
   // Refresh calendar 
   //calendar.render();
 
@@ -341,6 +247,52 @@ document.getElementsByClassName("close")[0].addEventListener("click", function()
   /*type.disabled = false;
   description.readOnly = false;
   date.readOnly = false;*/
+}
+// Get the delete button from modal 
+document.getElementById('comm-delete-modal').addEventListener("click", commModalDelete );
+  
+// Delete contents from the modal. Then update Initiative object, Message Manager tab and Initiative tab
+function commModalDelete (){
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You won\'t be able to undo this!?', 
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#8bcbe0',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, Cancel!',
+    cancelButtonColor: '#d33'
+  })
+  .then(function (value) {
+    if (value.isConfirmed == false) { // Escape deletion 
+      return
+    } else { // Proceed with deletion 
+      // Get id from DOM
+      const commId = document.getElementById("comm-id");
+      // Remove communication from UI
+      /*let messAve = document.getElementById(`avenue${aveId.value}`);
+      messAve.parentElement.removeChild(messAve);*/
+      // Delete Schedule object on calendar 
+      /*calendar.deleteSchedule(aveId.value, '1');*/
+      
+      // Remove communication from database 
+      const commRef = dbRef.child('users/' + commId);
+      commRef.remove();
+      
+    // Close modal
+    commModalUI.style.display = "none";
+    resetModal();
+  
+    return
+    }; 
+  });
+};
+
+// Get the <span> element that closes the modal and attach listener
+document.getElementsByClassName("close")[0].addEventListener("click", function() {
+  // Close modal
+  commModalUI.style.display = "none";
+  resetModal();
 });
 
 // When the user clicks anywhere outside of the modal, close it
@@ -348,41 +300,7 @@ window.addEventListener('click', function(event) {
   if (event.target == commModalUI) {
     // Close modal
     commModalUI.style.display = "none";
-  
-    // Refresh calendar 
-    //calendar.render();
-
-    // Get modal fields
-    const commId = document.getElementById("comm-id");
-    const goalId = document.getElementById("linked-goal-id");
-    const remId = document.getElementById("linked-reminders-id");
-    const type = document.getElementById("comm-type-modal");
-    const subject = document.getElementById("comm-subject-modal");
-    const toWhom = document.getElementById("comm-to-whom-modal");
-    const fromWhom = document.getElementById("comm-from-whom-modal");
-    const date = document.getElementById("comm-date-modal");
-    const sent = document.getElementById("comm-sent-modal");
-   
-    // Reset modal
-    commId.value = '';
-    goalId.value = '';
-    remId.value = '';
-    type.options.selectedIndex = 0;
-    subject.value = '';
-    toWhom.value = '';
-    fromWhom.value = '';
-    date.value = '';
-    sent.options.selectedIndex = 0;       
-    // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
-    date.style.backgroundColor = 'rgb(245, 245,230)';
-    subject.style.backgroundColor = 'rgb(245, 245,230)';
-    // Resent delete button if hidden when launching modal from add button
-    document.getElementById('comm-delete-modal').style.display = "block";
-    document.getElementById('comm-delete-modal').style.position = "initial";
-    // Reset modal if it was opened from an communication connected with a goal 
-    /*type.disabled = false;
-    description.readOnly = false;
-    date.readOnly = false;*/
+    resetModal();
   };
 });  
 
