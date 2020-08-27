@@ -99,6 +99,10 @@ textarea {
     border-color: var(--base-border-color);
 }
 
+#comm-in > li:hover {
+  background-color: antiquewhite;
+}
+
 /* Add button styling */
 #add-comm-btn,
 #add-goal-btn {
@@ -145,143 +149,19 @@ textarea {
     border-radius: 5px; /* Round corners */
   }
 
-  /* elements with rounded corners within main box */
-  #aveDropModal {
-    border-style: var(--base-border-style);
-    border-color: var(--base-border-color);
-    border-radius: 4px 0px 0px 0px;
-    border-width: 1px 1px 0px 1px;
-    cursor: pointer;
-    background-color: var(--workspace-bg-color);
-  }
-
-    /* Extra rules for aves that are linked to goals */
-    /*#aveDropModal:disabled {
-      opacity: 1;
-      color: black;
-      cursor: not-allowed;
-    }*/
-
-  #avePersTitle {
-    border-radius: 0px 4px 0px 0px;
-    border-width: 1px 1px 0px 0px;
-    border-style: var(--base-border-style);
-    border-color: var(--base-border-color);
-  }
-
-  #aveDateTitle {
-    border-width: 1px 0px 0px 1px;
-    border-style: var(--base-border-style);
-    border-color: var(--base-border-color);
-  }
- 
-  #aveDescTitle {
-    border-width: 1px 0px 0px 0px;
-    border-style: var(--base-border-style);
-    border-color: var(--base-border-color);
-  }
-
-  #aveDescModal {
-    border-style: var(--base-border-style);
-    border-color: var(--base-border-color);
-  }
-
-    /* Extra rules for aves that are linked to goals */
-    #aveDescModal:read-only {
-      cursor: not-allowed;
-    }
-
-    #aveDescModal:read-only:focus {
-      outline: none;
-    }
-   
-  #avePersModal {
-    border-style: var(--base-border-style);
-    border-color: var(--base-border-color);
-    border-radius: 0px 0px 4px 0px;
-  }
-
-  #modalSentBox {
-    border-radius: 0px 0px 0px 4px;
-    grid-column-start: 1;
-    grid-column-end: 2;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    padding: 0.5rem;
-    border-width: var(--base-border-width);
-    border-style: var(--base-border-style);
-    border-color: var(--base-border-color);
-    cursor: default;
-  }
-
-  #aveSentModal {
-    background-color: var(--workspace-bg-color);
-  }
-
-  #aveSentModal:hover,
-  #aveSentModal:focus {
-    text-decoration: none;
-    cursor: pointer;
-  }
-
-
   /* Change datechooser boarder to match other inputs */
-  #aveDateModal {
+  #comm-date-modal {
     border-width: var(--base-border-width);
     border-style: var(--base-border-style);
     border-color: var(--base-border-color);
     background-color: var(--workspace-bg-color);
   }
 
-   /* Extra rules for aves that are linked to goals */
-   #aveDateModal:read-only {
-      cursor: not-allowed;
-    }
-
-    #aveDateModal:read-only:focus {
-      outline: none;
-    }
-
-  /* Holds save and delete button for popup */ 
-  #aveBtns {
-    grid-row-start: 3;
-    grid-row-end: 4;
-    grid-column-start: 1;
-    grid-column-end: 5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* Extra rules for aves that are linked to goals */
+  /*#comm-date-modal:read-only {
+    cursor: not-allowed;
   }
 
-  #aveSaveModal {
-    flex-grow: 0.4;
-  }
-
-/*Edit*/
-#edit-user-module {
-    display: none;
-    position: absolute;
-    background-color: #e1e1e1;
-    border: 1px solid #999;
-    top:149px;
-    left: 160px;
-    padding: 10px;
-    width: 150px;
-}
-
-#user-list li:hover~#edit-user-module {
-    display: none;
-}
-
-
-#edit-user-module form button {
-    background: #54bb7d;
-    font-size: 1em;
-    padding: 0px 10px;
-    color: white;
-    margin-top: 10px;
-}
-
-.edit-user-input {
-    width: 95%;
-}
+  #comm-date-modal:read-only:focus {
+    outline: none;
+  }*/
