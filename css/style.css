@@ -157,6 +157,14 @@ textarea {
     background-color: var(--workspace-bg-color);
   }
 
+  #comm-btns {
+    display: flex;
+    justify-content: center;
+  }
+
+  .modal-bts {
+      margin: 0.5rem;
+  }
   /* Extra rules for aves that are linked to goals */
   /*#comm-date-modal:read-only {
     cursor: not-allowed;

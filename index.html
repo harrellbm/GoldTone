@@ -58,7 +58,9 @@
                 <div id="linked-reminders-id" style="position: fixed; display: none;"></div>
                 <!-- Modal content -->
                 <div class="comm-modal-content">
-                    <span class="close">&times;</span>
+                    <div style="display: flex; justify-content: flex-end;">
+                        <span class="close">&times;</span>
+                    </div>
                     <div>
                         <label for="comm-type-modal">Type</label>
                         <select id="comm-type-modal" class="comm-modal-input" data-key="type"></select>
@@ -88,8 +90,8 @@
                         </select> 
                     </div>
                     <div id="comm-btns"> 
-                        <input id="comm-save-modal" class="button" type="button"  value="Save"> 
-                        <input id="comm-delete-modal" class="button" type="button"  value="Delete">
+                        <input id="comm-save-modal" class="modal-bts" type="button"  value="Save"> 
+                        <input id="comm-delete-modal" class="modal-bts" type="button" value="Delete">
                     </div>
                 </div>
             </div>

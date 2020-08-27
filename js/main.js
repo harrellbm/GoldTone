@@ -145,7 +145,11 @@ function commModalLaunch (event, comId='', comObj={}) {
     let momDate = moment(comObj["date"], 'ddd MMM DD YYYY HH:mm:ss'); // Adjust to current timezone from saved timezone
     date.value = momDate.format('YYYY-MM-DD'); // format for display in date chooser
     sent.value = comObj["sent"];
-  };
+  } else if (comId == '') {
+    /* Hide delete button because we are launching to add a new communication */
+    document.getElementById('comm-delete-modal').style.display = "none";
+    document.getElementById('comm-delete-modal').style.position = "absolute";
+  }
 
   // Display modal
   commModalUI.style.display = "block";
@@ -210,12 +214,13 @@ function commModalSave (){
     // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
     date.style.backgroundColor = 'rgb(245, 245,230)';
     subject.style.backgroundColor = 'rgb(245, 245,230)';
+    // Resent delete button if hidden when launching modal from add button
+    document.getElementById('comm-delete-modal').style.display = "block";
+    document.getElementById('comm-delete-modal').style.position = "initial";
     // Reset modal if it was opened from an avenue connected with a goal 
     /*type.disabled = false;
     description.readOnly = false;
-    date.readOnly = false;
-    document.getElementById('aveDeleteModal').style.display = "block";
-    document.getElementById('aveDeleteModal').style.position = "initial";*/
+    date.readOnly = false;*/
   } else { // Change backgroup of date or description if not filled out 
       if (date.value == ''){
         date.style.backgroundColor = 'rgb(225, 160, 140)';
@@ -329,12 +334,13 @@ document.getElementsByClassName("close")[0].addEventListener("click", function()
   // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
   date.style.backgroundColor = 'rgb(245, 245,230)';
   subject.style.backgroundColor = 'rgb(245, 245,230)';
+  // Resent delete button if hidden when launching modal from add button
+  document.getElementById('comm-delete-modal').style.display = "block";
+  document.getElementById('comm-delete-modal').style.position = "initial";
   // Reset modal if it was opened from an communication connected with a goal 
   /*type.disabled = false;
   description.readOnly = false;
-  date.readOnly = false;
-  document.getElementById('aveDeleteModal').style.display = "block";
-  document.getElementById('aveDeleteModal').style.position = "initial";*/
+  date.readOnly = false;*/
 });
 
 // When the user clicks anywhere outside of the modal, close it
@@ -370,12 +376,13 @@ window.addEventListener('click', function(event) {
     // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
     date.style.backgroundColor = 'rgb(245, 245,230)';
     subject.style.backgroundColor = 'rgb(245, 245,230)';
+    // Resent delete button if hidden when launching modal from add button
+    document.getElementById('comm-delete-modal').style.display = "block";
+    document.getElementById('comm-delete-modal').style.position = "initial";
     // Reset modal if it was opened from an communication connected with a goal 
     /*type.disabled = false;
     description.readOnly = false;
-    date.readOnly = false;
-    document.getElementById('aveDeleteModal').style.display = "block";
-    document.getElementById('aveDeleteModal').style.position = "initial";*/
+    date.readOnly = false;*/
   };
 });  
 
