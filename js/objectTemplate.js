@@ -1,3 +1,5 @@
+let communication_types = ['Email', 'Text', 'Phone Call', 'Facebook', 'Instagram', 'Card', 'Handout', 'Poster','Other'];
+
 // Constructor for Initiative object.  Top tier data structure 
 class Initiative {
    constructor() {

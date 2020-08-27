@@ -47,11 +47,11 @@
                     </div>
                     <span>Sort</span>
                 </div>
-                <div id="comm-in">communications will go here</div>
+                <div id="comm-in"></div>
                 <div id="rem-in"></div>
             </section>
             
-             <!-- Modal for adding communication -->
+             <!-- Modal for adding and editing communications -->
             <div id="comm-modal">
                 <div id="comm-id" style="position: fixed; display: none;"></div>
                 <div id="linked-goal-id" style="position: fixed; display: none;"></div>
@@ -61,27 +61,27 @@
                     <span class="close">&times;</span>
                     <div>
                         <label for="comm-type-modal">Type</label>
-                        <select id="comm-type-modal" class="comm-modal-input"></select>
+                        <select id="comm-type-modal" class="comm-modal-input" data-key="type"></select>
                     </div>
                     <div>
                         <label for="comm-subject-modal">Subject</label>
-                        <textarea id="comm-subject-modal" class="comm-modal-input"></textarea>  
+                        <textarea id="comm-subject-modal" class="comm-modal-input" data-key="subject" placeholder="Type the subject of your dispatch here"></textarea>  
                     </div>
                     <div>
                         <label for="comm-to-whom-modal">To</label>
-                        <textarea id="comm-to-whom-modal" class="comm-modal-input"></textarea>  
+                        <textarea id="comm-to-whom-modal" class="comm-modal-input" data-key="to_whom" placeholder="Who is it to?"></textarea>  
                     </div>
                     <div>
                         <label for="comm-from-whom-modal">From</label>
-                        <textarea id="comm-from-whom-modal" class="comm-modal-input"></textarea>  
+                        <textarea id="comm-from-whom-modal" class="comm-modal-input" data-key="from_whom" placeholder="Who is sending it?"></textarea>  
                     </div>
                     <div>
                         <label for="comm-date-modal">Date</label>
-                        <input id="comm-date-modal" class="comm-modal-input" type="date"></input>  
+                        <input id="comm-date-modal" class="comm-modal-input" type="date" data-key="date"></input>  
                     </div>
                     <div>
-                        <label for="comm-sent-modal">From</label>
-                        <select id="comm-sent-modal" class="comm-modal-input">
+                        <label for="comm-sent-modal">Sent</label>
+                        <select id="comm-sent-modal" class="comm-modal-input" data-key="sent">
                             <option>no</option>
                             <option>in progress</option>
                             <option>yes</option>
@@ -94,18 +94,7 @@
                 </div>
             </div>
 
-
             <ul id="userList"></ul>
-
-            <!-- edit user module -->
-            <section id="edit-user-module">
-                <form>
-                    <h2>Edit user</h2> <input type="hidden" class="edit-userid"> name:<br> <input type='text' data-key='name'
-                    class='edit-user-input'><br> age:<br> <input type='text' data-key='age' class='edit-user-input'><br>
-                    email:<br> <input type='text' data-key='email' class='edit-user-input'><br> <button type='button'
-                    id="edit-user-btn">save</button>
-                </form>
-            </section>
         </div>
 
         <!-- The core Firebase JS SDK is always required and must be listed first -->

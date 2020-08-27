@@ -7,84 +7,86 @@ window.onload = () => {
                  .register('./sw.js');
     }
 } */
+ // Set communication type dropdown options from list defined in objectTemplate.js 
+ const comTypeUI = document.getElementById("comm-type-modal");
+ let options = communication_types;
+ for (i in options){
+   let opElem = document.createElement("option");
+   let opText = options[i]
+   opElem.setAttribute("value", `${opText}`);
+   opElem.innerHTML = `${opText}`;
+   comTypeUI.appendChild(opElem);
+ };
 
 const dbRef = firebase.database().ref();
 const comRef = dbRef.child('communications');
 const remRef = dbRef.child('reminders');
-const userListUI = document.getElementById("userList");
 
-/* Access Communications Document */
+/* List communications on UI */
 comRef.on("child_added", snap => {
-
-    let communication = snap.val();
-    console.log("database snapshot of communications", communication);
+  const commIn = document.getElementById("comm-in");
+  let communication = snap.val();
+  console.log("database snapshot of communications", communication);
 
 	let $li = document.createElement("li");
-	$li.innerHTML = communication.type;
+	$li.innerHTML = communication.subject;
 	$li.setAttribute("child-key", snap.key);
 	$li.addEventListener("click", comClicked);
-    // edit icon 
-    let editIconUI = document.createElement("span");
-    editIconUI.class = "edit-user";
-    editIconUI.innerHTML = " ✎";
-    editIconUI.setAttribute("userid", snap.key);
-    editIconUI.addEventListener("click", editButtonClicked) // Append after li.innerHTML = value.name 
-    $li.append(editIconUI);
-    // delete icon 
-    let deleteIconUI = document.createElement("span");
-    deleteIconUI.class = "delete-user";
-    deleteIconUI.innerHTML = " ☓";
-    deleteIconUI.setAttribute("userid", snap.key);
-    deleteIconUI.addEventListener("click", deleteButtonClicked) 
-    $li.append(deleteIconUI);
 
-    userListUI.append($li);
+  commIn.append($li);
 });
 
+/* Clicking on a listed communication */
 function comClicked(e) {
 
-	var userID = e.target.getAttribute("child-key");
+  var comId = e.target.getAttribute("child-key");
 
-	const comRef = dbRef.child('communications/' + userID);
-	const commInUI = document.getElementById("comm-in");
+  const comRef = dbRef.child('communications/' + comId);
+  
+  /* display in rem in for now */
+	const commInUI = document.getElementById("rem-in");
 
-	commInUI.innerHTML = ""
+  commInUI.innerHTML = ""
+  
+  let comObj = {};
 
 	comRef.on("child_added", snap => {
 
 		var $p = document.createElement("p");
-		$p.innerHTML = snap.key  + " - " +  snap.val()
-		commInUI.append($p);
+		$p.innerHTML = snap.key  + " - " +  snap.val();
+    commInUI.append($p);
+    comObj[snap.key] = snap.val();
+  });
 
-	});
-
-}
+  /* launch the modal */
+  commModalLaunch("list_launch", comId, comObj);
+};
 /* Access reminders document */
 remRef.on("child_added", snap => {
-
+  const userListUI = document.getElementById("userList");
 	let reminder = snap.val();
-    console.log("database snapshot of reminders", reminder);
+  console.log("database snapshot of reminders", reminder);
 
 	let $li = document.createElement("li");
 	$li.innerHTML = reminder.time_before;
 	$li.setAttribute("child-key", snap.key);
 	$li.addEventListener("click", remClicked);
-    // edit icon 
-    let editIconUI = document.createElement("span");
-    editIconUI.class = "edit-user";
-    editIconUI.innerHTML = " ✎";
-    editIconUI.setAttribute("userid", snap.key);
-    editIconUI.addEventListener("click", editButtonClicked) // Append after li.innerHTML = value.name 
-    $li.append(editIconUI);
-    // delete icon 
-    let deleteIconUI = document.createElement("span");
-    deleteIconUI.class = "delete-user";
-    deleteIconUI.innerHTML = " ☓";
-    deleteIconUI.setAttribute("userid", snap.key);
-    deleteIconUI.addEventListener("click", deleteButtonClicked) 
-    $li.append(deleteIconUI);
+  // edit icon 
+  let editIconUI = document.createElement("span");
+  editIconUI.class = "edit-user";
+  editIconUI.innerHTML = " ✎";
+  editIconUI.setAttribute("userid", snap.key);
+  editIconUI.addEventListener("click", editButtonClicked) // Append after li.innerHTML = value.name 
+  $li.append(editIconUI);
+  // delete icon 
+  let deleteIconUI = document.createElement("span");
+  deleteIconUI.class = "delete-user";
+  deleteIconUI.innerHTML = " ☓";
+  deleteIconUI.setAttribute("userid", snap.key);
+  deleteIconUI.addEventListener("click", deleteButtonClicked) 
+  $li.append(deleteIconUI);
 
-    userListUI.append($li);
+  userListUI.append($li);
 });
 
 
@@ -109,16 +111,42 @@ function remClicked(e) {
 
 /* TODO: add event listner and function to handle adding goal */
 
+
+// Get the modal for easy access later 
+      // Note: on tui calendar the modal is opened via the beforeCreateSchedule event
+const commModalUI = document.getElementById("comm-modal"); 
+
 /* Add a new communication through modal popup */
-// Get the modal and button that opens it from message manager tab
-      // Note: on the initaitive tab the modal is opened via the beforeCreateSchedule event
 const addCommBtnUI = document.getElementById("add-comm-btn"); 
-const commModalUI = document.getElementById("comm-modal");  
-addCommBtnUI.addEventListener("click", addCommModalLaunch);
+addCommBtnUI.addEventListener("click", commModalLaunch);
 
 // Launch the modal with basic settings. Can take in a date from calendar event to display on creation
-function addCommModalLaunch (calEvent='', launchType='') {
-// will need to handle displaying and editing commmunications later 
+function commModalLaunch (event, comId='', comObj={}) {
+  
+  // If launching from an old communication fill the modal with values 
+  if (comId != '') {
+    const commId = document.getElementById("comm-id");
+    const goalId = document.getElementById("linked-goal-id");
+    const remId = document.getElementById("linked-reminders-id");
+    const type = document.getElementById("comm-type-modal");
+    const subject = document.getElementById("comm-subject-modal");
+    const toWhom = document.getElementById("comm-to-whom-modal");
+    const fromWhom = document.getElementById("comm-from-whom-modal");
+    const date = document.getElementById("comm-date-modal");
+    const sent = document.getElementById("comm-sent-modal");
+  
+    commId.value = comId;
+    goalId.value = comObj["goal_key"];
+    remId.value = comObj["reminder_keys"];
+    type.value = comObj["com_type"];
+    subject.value = comObj["subject"];
+    toWhom.value = comObj["to_whom"];
+    fromWhom.value = comObj["from_whom"];
+    let momDate = moment(comObj["date"], 'ddd MMM DD YYYY HH:mm:ss'); // Adjust to current timezone from saved timezone
+    date.value = momDate.format('YYYY-MM-DD'); // format for display in date chooser
+    sent.value = comObj["sent"];
+  };
+
   // Display modal
   commModalUI.style.display = "block";
 };
@@ -155,21 +183,17 @@ function commModalSave (){
       });
     } else {
       // Update communication in database 
-      const commRef = dbRef.child('communications/' + commId.value);
-      // set data to the user field 
-      const comInputsUI = document.getElementsByClassName("comm-modal-input");
-      commRef.on("value", snap => {
-        for (var i = 0, len = omInputsUI.length; i < len; i++) {
-            var key = omInputsUI[i].getAttribute("data-key");
-            omInputsUI[i].value = snap.val()[key];
-        }
-      }); 
+      const updateComm = new Communication(type.value, subject.value, toWhom.value, fromWhom.value, momDate.toString(), sent.value, goalId.value, remId.value); // Convert date to String to preserve timezone
+      console.log("communication to update", updateComm);
+      const comDb = comRef.child(commId.value);
+      comDb.update(updateComm);
+
       // Update Schedule object on calendar 
-      calendar.updateSchedule(aveId.value, '1', {
+      /*calendar.updateSchedule(aveId.value, '1', {
         title: description.value,
         start: momDate.format('ddd DD MMM YYYY HH:mm:ss'),
         end:  momDate.format('ddd DD MMM YYYY HH:mm:ss')
-      });
+      });*/
     }; 
     // Close modal
     commModalUI.style.display = "none";
@@ -177,10 +201,7 @@ function commModalSave (){
     commId.value = '';
     goalId.value = '';
     remId.value = '';
-    let i, L= type.options.length - 1;
-    for(i = L; i >= 0; i--) {
-      type.remove(i);
-    };
+    type.options.selectedIndex = 0;
     subject.value = '';
     toWhom.value = '';
     fromWhom.value = '';
@@ -299,10 +320,7 @@ document.getElementsByClassName("close")[0].addEventListener("click", function()
   commId.value = '';
   goalId.value = '';
   remId.value = '';
-  let i, L= type.options.length - 1;
-  for(i = L; i >= 0; i--) {
-    type.remove(i);
-  };
+  type.options.selectedIndex = 0;
   subject.value = '';
   toWhom.value = '';
   fromWhom.value = '';
@@ -343,10 +361,7 @@ window.addEventListener('click', function(event) {
     commId.value = '';
     goalId.value = '';
     remId.value = '';
-    let i, L= type.options.length - 1;
-    for(i = L; i >= 0; i--) {
-      type.remove(i);
-    };
+    type.options.selectedIndex = 0;
     subject.value = '';
     toWhom.value = '';
     fromWhom.value = '';
@@ -401,9 +416,6 @@ function editButtonClicked (e) {
     });
 };
 
-const saveBtn = document.querySelector("#edit-user-btn"); 
-saveBtn.addEventListener("click", saveUserBtnClicked);
-
 
 function saveUserBtnClicked() {
     const userID = document.querySelector(".edit-userid").value;
@@ -426,3 +438,16 @@ function deleteButtonClicked(e) {
     const userRef = dbRef.child('users/' + userID);
     userRef.remove()
 }
+
+/*
+ const commRef = dbRef.child('communications/' + commId.value);
+      // set data to the user field 
+const comInputsUI = document.getElementsByClassName("comm-modal-input");
+
+commRef.on("value", snap => {
+  for (var i = 0, len = comInputsUI.length; i < len; i++) {
+      var key = comInputsUI[i].getAttribute("data-key");
+      console.log(key)
+      comInputsUI[i].value = snap.val()[key];
+  }
+});*/
