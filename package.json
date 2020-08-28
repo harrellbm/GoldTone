@@ -4,7 +4,8 @@
   "description": "Keep the flow of information clean and organized.",
   "main": "./index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "webpack --mode development",
+    "start": "webpack-dev-server --mode development --open"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,16 @@
   },
   "homepage": "https://github.com/harrellbm/GoldTone#readme",
   "dependencies": {
+    "firebase": "^7.19.1",
     "moment": "^2.27.0",
     "sweetalert2": "^9.17.1"
+  },
+  "devDependencies": {
+    "css-loader": "^4.2.2",
+    "html-webpack-plugin": "^4.3.0",
+    "style-loader": "^1.2.1",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   }
 }
