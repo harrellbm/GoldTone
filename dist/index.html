@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>GoldTone</title>
+        <!-- link rel="manifest" href="../manifest.json" -->
+        <meta name="theme-color" content="blue">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="favicon.ico" type="image/x-icon" />  
+        <link rel="apple-touch-icon" href="assets/hello-icon-152.png">   
+        <meta name="theme-color" content="white"/>  
+        <meta name="apple-mobile-web-app-capable" content="yes">  
+        <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
+        <meta name="apple-mobile-web-app-title" content="Hello World"> 
+        <meta name="msapplication-TileImage" content="assets/hello-icon-144.png">  
+        <meta name="msapplication-TileColor" content="#FFFFFF">
+    </head>
+    <body class="fullscreen">
+        <div class="container">
+            <div id="tabs">
+                <span> | This is where | </span>
+                <span> | Tabs will go | </span>
+                <span> | Fake tab | </span>
+            </div>
+            <!-- Goal section -->
+            <section id="goal-sec">
+                <div id="goal-toolbar">
+                    <p>Goals</p>
+                    <div style="width: 25px; height: 25px;">
+                        <svg  id="add-goal-btn" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"/>
+                        </svg>
+                    </div>
+                    <span>Sort</span>
+                </div>
+                <div id="goal-in">goals will go here</div>
+            </section>
+            <!-- Communications section -->
+            <section id="comm-sec">
+                <div id="comm-toolbar">
+                    <p>Dispatch</p>
+                    <div style="width: 25px; height: 25px;">
+                        <svg  id="add-comm-btn" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"/>
+                        </svg>
+                    </div>
+                    <span>Sort</span>
+                </div>
+                <div id="comm-in"></div>
+                <div id="rem-in"></div>
+            </section>
+            
+             <!-- Modal for adding and editing communications -->
+            <div id="comm-modal">
+                <div id="comm-id" style="position: fixed; display: none;"></div>
+                <div id="linked-goal-id" style="position: fixed; display: none;"></div>
+                <div id="linked-reminders-id" style="position: fixed; display: none;"></div>
+                <!-- Modal content -->
+                <div class="comm-modal-content">
+                    <div style="display: flex; justify-content: flex-end;">
+                        <span class="close">&times;</span>
+                    </div>
+                    <div>
+                        <label for="comm-type-modal">Type</label>
+                        <select id="comm-type-modal" class="comm-modal-input" data-key="type"></select>
+                    </div>
+                    <div>
+                        <label for="comm-subject-modal">Subject</label>
+                        <textarea id="comm-subject-modal" class="comm-modal-input" data-key="subject" placeholder="Type the subject of your dispatch here"></textarea>  
+                    </div>
+                    <div>
+                        <label for="comm-to-whom-modal">To</label>
+                        <textarea id="comm-to-whom-modal" class="comm-modal-input" data-key="to_whom" placeholder="Who is it to?"></textarea>  
+                    </div>
+                    <div>
+                        <label for="comm-from-whom-modal">From</label>
+                        <textarea id="comm-from-whom-modal" class="comm-modal-input" data-key="from_whom" placeholder="Who is sending it?"></textarea>  
+                    </div>
+                    <div>
+                        <label for="comm-date-modal">Date</label>
+                        <input id="comm-date-modal" class="comm-modal-input" type="date" data-key="date"></input>  
+                    </div>
+                    <div>
+                        <label for="comm-sent-modal">Sent</label>
+                        <select id="comm-sent-modal" class="comm-modal-input" data-key="sent">
+                            <option>no</option>
+                            <option>in progress</option>
+                            <option>yes</option>
+                        </select> 
+                    </div>
+                    <div id="comm-btns"> 
+                        <input id="comm-save-modal" class="modal-bts" type="button"  value="Save"> 
+                        <input id="comm-delete-modal" class="modal-bts" type="button" value="Delete">
+                    </div>
+                </div>
+            </div>
+
+            <ul id="userList"></ul>
+        </div>
+
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+        <!-- script src="/__/firebase/7.19.0/firebase-app.js"></script -->
+
+        <!-- TODO: Add SDKs for Firebase products that you want to use
+            https://firebase.google.com/docs/web/setup#available-libraries -->
+              
+         <!-- Add Firebase products that you want to use -->
+        <!-- script src="/__/firebase/7.19.0/firebase-analytics.js"></script>
+        <script src="/__/firebase/7.19.0/firebase-auth.js"></script>
+        <script src="/__/firebase/7.19.0/firebase-database.js"></script -->
+
+        <!-- Initialize Firebase -->
+        <!-- script src="/__/firebase/init.js"></script -->
+    <script src="main.js"></script></body>
+</html>
