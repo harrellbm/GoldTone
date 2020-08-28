@@ -1,3 +1,31 @@
+import { Communication } from "./objectTemplate";
+import "./style.css";
+import moment from "moment";
+import Swal from "sweetalert2";
+
+// Firebase App (the core Firebase SDK) is always required and must be listed first
+import * as firebase from "firebase/app";
+
+// If you enabled Analytics in your project, add the Firebase SDK for Analytics
+import "firebase/analytics";
+
+// Add the Firebase products that you want to use
+import "firebase/auth";
+import "firebase/database";
+
+/* Initialize firebase */
+const firebaseConfig = {
+  apiKey: "AIzaSyAaFDkvt6AA7fvKOLI32ptXNgfkkOyDGN4",
+  authDomain: "goldtone-793f5.firebaseapp.com",
+  databaseURL: "https://goldtone-793f5.firebaseio.com",
+  projectId: "goldtone-793f5",
+  storageBucket: "goldtone-793f5.appspot.com",
+  messagingSenderId: "269567687183",
+  appId: "1:269567687183:web:e32eda4a67c39e83c8017a",
+  measurementId: "G-313ZP19KY1"
+};
+
+firebase.initializeApp(firebaseConfig);
 /* basic service worker, will worry about this later 
 window.onload = () => {
     'use strict';
@@ -7,120 +35,90 @@ window.onload = () => {
                  .register('./sw.js');
     }
 } */
- // Set communication type dropdown options from list defined in objectTemplate.js 
- const comTypeUI = document.getElementById("comm-type-modal");
- let options = communication_types;
- for (i in options){
-   let opElem = document.createElement("option");
-   let opText = options[i]
-   opElem.setAttribute("value", `${opText}`);
-   opElem.innerHTML = `${opText}`;
-   comTypeUI.appendChild(opElem);
- };
+let communication_types = ['Email', 'Text', 'Phone Call', 'Facebook', 'Instagram', 'Card', 'Handout', 'Poster','Other'];
 
+// Grab references to database documents 
 const dbRef = firebase.database().ref();
-const comRef = dbRef.child('communications');
+
+/* Get reference to Reminders document in database */
 const remRef = dbRef.child('reminders');
 
-/* List communications on UI */
-comRef.on("child_added", snap => {
-  const commIn = document.getElementById("comm-in");
-  let communication = snap.val();
-  console.log("database snapshot of communications", communication);
 
-	let $li = document.createElement("li");
-	$li.innerHTML = communication.subject;
-	$li.setAttribute("child-key", snap.key);
-	$li.addEventListener("click", comClicked);
+/* TODO: add event listner and function to handle adding goal */
 
-  commIn.append($li);
-});
 
-/* Clicking on a listed communication */
+/* --------- */ /* Communication Related Events and Functions */ /* --------- */
+
+/* Get reference to Communications document in database */
+const comRef = dbRef.child('communications');
+
+
+/* ---------- Functions ---------- */
+
+/* When communication listed in UI is clicked get database reference and lauch modal */
 function comClicked(e) {
-
-  var comId = e.target.getAttribute("child-key");
-
+  /* Get database reference */
+  var comId = e.target.getAttribute("id");
   const comRef = dbRef.child('communications/' + comId);
-  
-  /* display in rem in for now */
-	const commInUI = document.getElementById("rem-in");
 
-  commInUI.innerHTML = ""
-  
+  /* Build communication object from database to send to modal */
   let comObj = {};
-
-	comRef.on("child_added", snap => {
-
-		var $p = document.createElement("p");
-		$p.innerHTML = snap.key  + " - " +  snap.val();
-    commInUI.append($p);
+  comRef.on("child_added", snap => {
     comObj[snap.key] = snap.val();
   });
 
   /* launch the modal */
   commModalLaunch("list_launch", comId, comObj);
 };
-/* Access reminders document */
-remRef.on("child_added", snap => {
-  const userListUI = document.getElementById("userList");
-	let reminder = snap.val();
-  console.log("database snapshot of reminders", reminder);
+
+
+/* ---------- Event Listeners ---------- */
+
+/* Listen for new communications in database then update UI */
+comRef.on("child_added", snap => {
+  const commIn = document.getElementById("comm-in");
+  let communication = snap.val();
+  //console.log("database snapshot of communications", communication);
 
 	let $li = document.createElement("li");
-	$li.innerHTML = reminder.time_before;
-	$li.setAttribute("child-key", snap.key);
-	$li.addEventListener("click", remClicked);
-  // edit icon 
-  let editIconUI = document.createElement("span");
-  editIconUI.class = "edit-user";
-  editIconUI.innerHTML = " ✎";
-  editIconUI.setAttribute("userid", snap.key);
-  editIconUI.addEventListener("click", editButtonClicked) // Append after li.innerHTML = value.name 
-  $li.append(editIconUI);
-  // delete icon 
-  let deleteIconUI = document.createElement("span");
-  deleteIconUI.class = "delete-user";
-  deleteIconUI.innerHTML = " ☓";
-  deleteIconUI.setAttribute("userid", snap.key);
-  deleteIconUI.addEventListener("click", deleteButtonClicked) 
-  $li.append(deleteIconUI);
+	$li.innerHTML = communication.subject;
+	$li.setAttribute("id", snap.key);
+	$li.addEventListener("click", comClicked);
 
-  userListUI.append($li);
+  commIn.append($li);
+});
+
+/* TODO: need to add on child updated listener to update ui on updates */
+
+/* Listen for deleted communications in database then update UI */
+comRef.on("child_removed", snap => {
+  const removedComUI = document.getElementById(snap.key);
+  removedComUI.remove(removedComUI);
 });
 
 
-function remClicked(e) {
+/* ------------------- */ /* Modal for Communications */ /* ----------------- */
 
-	var userID = e.target.getAttribute("child-key");
+// Set communication type dropdown options from list defined in objectTemplate.js 
+const comTypeUI = document.getElementById("comm-type-modal");
+let options = communication_types;
+for (let i in options){
+  let opElem = document.createElement("option");
+  let opText = options[i]
+  opElem.setAttribute("value", `${opText}`);
+  opElem.innerHTML = `${opText}`;
+  comTypeUI.appendChild(opElem);
+};
 
-	const remRef = dbRef.child('reminders/' + userID);
-	const remInUI = document.getElementById("rem-in");
-
-	remInUI.innerHTML = ""
-
-	remRef.on("child_added", snap => {
-
-		var $p = document.createElement("p");
-		$p.innerHTML = snap.key  + " - " +  snap.val()
-		remInUI.append($p);
-
-	});
-
-}
-
-/* TODO: add event listner and function to handle adding goal */
-
-
-// Get the modal for easy access later 
+/* Get the modal element for easy access later */
       // Note: on tui calendar the modal is opened via the beforeCreateSchedule event
 const commModalUI = document.getElementById("comm-modal"); 
 
-/* Add a new communication through modal popup */
-const addCommBtnUI = document.getElementById("add-comm-btn"); 
-addCommBtnUI.addEventListener("click", commModalLaunch);
 
-// Launch the modal with basic settings. Can take in a date from calendar event to display on creation
+/* ---------- Functions ---------- */
+
+/* Function to Launch modal */
+      // Note: Can take in an event from calendar
 function commModalLaunch (event, comId='', comObj={}) {
   
   // If launching from an old communication fill the modal with values 
@@ -134,7 +132,7 @@ function commModalLaunch (event, comId='', comObj={}) {
     const fromWhom = document.getElementById("comm-from-whom-modal");
     const date = document.getElementById("comm-date-modal");
     const sent = document.getElementById("comm-sent-modal");
-  
+        
     commId.value = comId;
     goalId.value = comObj["goal_key"];
     remId.value = comObj["reminder_keys"];
@@ -149,16 +147,57 @@ function commModalLaunch (event, comId='', comObj={}) {
     /* Hide delete button because we are launching to add a new communication */
     document.getElementById('comm-delete-modal').style.display = "none";
     document.getElementById('comm-delete-modal').style.position = "absolute";
-  }
-
+  }   
   // Display modal
   commModalUI.style.display = "block";
 };
-      
-// Get the save button from modal 
-document.getElementById('comm-save-modal').addEventListener("click", commModalSave );
-      
-// Save contents from the modal. Then update database, and UI
+
+/* Function to Close modal */
+function closeModal (){
+  // Close modal
+  commModalUI.style.display = "none";
+  resetModal();
+}
+
+/* Function to reset Modal after closing */
+function resetModal () {
+  // Refresh calendar 
+  //calendar.render();
+
+  // Get modal fields
+  const commId = document.getElementById("comm-id");
+  const goalId = document.getElementById("linked-goal-id");
+  const remId = document.getElementById("linked-reminders-id");
+  const type = document.getElementById("comm-type-modal");
+  const subject = document.getElementById("comm-subject-modal");
+  const toWhom = document.getElementById("comm-to-whom-modal");
+  const fromWhom = document.getElementById("comm-from-whom-modal");
+  const date = document.getElementById("comm-date-modal");
+  const sent = document.getElementById("comm-sent-modal");
+   
+  // Reset modal
+  commId.value = '';
+  goalId.value = '';
+  remId.value = '';
+  type.options.selectedIndex = 0;
+  subject.value = '';
+  toWhom.value = '';
+  fromWhom.value = '';
+  date.value = '';
+  sent.options.selectedIndex = 0;       
+  // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
+  date.style.backgroundColor = 'rgb(245, 245,230)';
+  subject.style.backgroundColor = 'rgb(245, 245,230)';
+  // Resent delete button if hidden when launching modal from add button
+  document.getElementById('comm-delete-modal').style.display = "block";
+  document.getElementById('comm-delete-modal').style.position = "initial";
+  // Reset modal if it was opened from an communication connected with a goal 
+  /*type.disabled = false;
+  description.readOnly = false;
+  date.readOnly = false;*/
+};
+
+/* Function to save communication from modal. Then update database. */
 function commModalSave (){
   const commId = document.getElementById("comm-id");
   const goalId = document.getElementById("linked-goal-id");
@@ -212,47 +251,9 @@ function commModalSave (){
   };
 };
 
-function resetModal () {
-  // Refresh calendar 
-  //calendar.render();
-
-  // Get modal fields
-  const commId = document.getElementById("comm-id");
-  const goalId = document.getElementById("linked-goal-id");
-  const remId = document.getElementById("linked-reminders-id");
-  const type = document.getElementById("comm-type-modal");
-  const subject = document.getElementById("comm-subject-modal");
-  const toWhom = document.getElementById("comm-to-whom-modal");
-  const fromWhom = document.getElementById("comm-from-whom-modal");
-  const date = document.getElementById("comm-date-modal");
-  const sent = document.getElementById("comm-sent-modal");
-   
-  // Reset modal
-  commId.value = '';
-  goalId.value = '';
-  remId.value = '';
-  type.options.selectedIndex = 0;
-  subject.value = '';
-  toWhom.value = '';
-  fromWhom.value = '';
-  date.value = '';
-  sent.options.selectedIndex = 0;       
-  // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
-  date.style.backgroundColor = 'rgb(245, 245,230)';
-  subject.style.backgroundColor = 'rgb(245, 245,230)';
-  // Resent delete button if hidden when launching modal from add button
-  document.getElementById('comm-delete-modal').style.display = "block";
-  document.getElementById('comm-delete-modal').style.position = "initial";
-  // Reset modal if it was opened from an communication connected with a goal 
-  /*type.disabled = false;
-  description.readOnly = false;
-  date.readOnly = false;*/
-}
-// Get the delete button from modal 
-document.getElementById('comm-delete-modal').addEventListener("click", commModalDelete );
-  
-// Delete contents from the modal. Then update Initiative object, Message Manager tab and Initiative tab
+// Function to delete communication from modal. Then update database */
 function commModalDelete (){
+  // Launch confirmation popup
   Swal.fire({
     title: 'Are you sure?',
     text: 'You won\'t be able to undo this!?', 
@@ -272,37 +273,98 @@ function commModalDelete (){
       // Remove communication from UI
       /*let messAve = document.getElementById(`avenue${aveId.value}`);
       messAve.parentElement.removeChild(messAve);*/
+
       // Delete Schedule object on calendar 
       /*calendar.deleteSchedule(aveId.value, '1');*/
       
       // Remove communication from database 
-      const commRef = dbRef.child('users/' + commId);
+      const commRef = dbRef.child('communications/' + commId.value);
       commRef.remove();
       
-    // Close modal
-    commModalUI.style.display = "none";
-    resetModal();
+      // Close modal
+      commModalUI.style.display = "none";
+      resetModal();
   
-    return
+      return
     }; 
   });
 };
 
-// Get the <span> element that closes the modal and attach listener
-document.getElementsByClassName("close")[0].addEventListener("click", function() {
-  // Close modal
-  commModalUI.style.display = "none";
-  resetModal();
-});
+/* ---------- Event listeners ---------- */
 
-// When the user clicks anywhere outside of the modal, close it
+/* Attach event listener to X button to close modal */
+document.getElementsByClassName("close")[0].addEventListener("click", closeModal);
+
+/* When the user clicks anywhere outside of the modal, close it */
 window.addEventListener('click', function(event) {
   if (event.target == commModalUI) {
     // Close modal
-    commModalUI.style.display = "none";
-    resetModal();
+    closeModal();
   };
-});  
+});
+
+/* TODO: add event listener for touch start to close modal when click outside on safari */
+
+/* Event listener on modal save button */
+document.getElementById('comm-save-modal').addEventListener("click", commModalSave );
+      
+/* Event listener on modal delete button */
+document.getElementById('comm-delete-modal').addEventListener("click", commModalDelete );
+
+/* Event listener on add button */
+document.getElementById("add-comm-btn").addEventListener("click", commModalLaunch);
+
+
+
+/* ------------ */ /* Reminder Related Events and Functions */ /* ----------- */
+
+/* Access reminders document */
+remRef.on("child_added", snap => {
+  const userListUI = document.getElementById("userList");
+	let reminder = snap.val();
+  //console.log("database snapshot of reminders", reminder);
+
+	let $li = document.createElement("li");
+	$li.innerHTML = reminder.time_before;
+	$li.setAttribute("id", snap.key);
+	$li.addEventListener("click", remClicked);
+  // edit icon 
+  let editIconUI = document.createElement("span");
+  editIconUI.class = "edit-user";
+  editIconUI.innerHTML = " ✎";
+  editIconUI.setAttribute("userid", snap.key);
+  editIconUI.addEventListener("click", editButtonClicked) // Append after li.innerHTML = value.name 
+  $li.append(editIconUI);
+  // delete icon 
+  let deleteIconUI = document.createElement("span");
+  deleteIconUI.class = "delete-user";
+  deleteIconUI.innerHTML = " ☓";
+  deleteIconUI.setAttribute("userid", snap.key);
+  deleteIconUI.addEventListener("click", deleteButtonClicked) 
+  $li.append(deleteIconUI);
+
+  userListUI.append($li);
+});
+
+function remClicked(e) {
+
+	var userID = e.target.getAttribute("id");
+
+	const remRef = dbRef.child('reminders/' + userID);
+	const remInUI = document.getElementById("rem-in");
+
+	remInUI.innerHTML = ""
+
+	remRef.on("child_added", snap => {
+
+		var $p = document.createElement("p");
+		$p.innerHTML = snap.key  + " - " +  snap.val()
+		remInUI.append($p);
+
+	});
+
+}
+
 
 
 

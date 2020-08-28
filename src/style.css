@@ -1,0 +1,175 @@
+
+/*------------------------*/ /* Global CSS Variables */ /*--------------------*/
+:root {
+    --base-bg-color: rgb(139, 203, 224);
+    --base-text-color: white;
+    --base-text-shadow: 2px 2px rgb( 100, 100, 100, 0.2);
+    --base-hover-color: rgb(139, 203, 224);
+    --base-border-style: solid;
+    --base-border-width: 1px;
+    --base-border-color: rgb(118, 118, 118);
+    --base-font-family: Helvetica, Arial, sans-serif;
+  
+    --workspace-bg-color: rgb(245, 245, 230);
+  }
+  
+/*------------------*/ /* Global Styles for Element Types */ /*---------------*/
+ 
+html,
+.fullscreen {
+    display: flex;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+body {
+    background: var(--base-bg-color);
+    font-family: var(--base-font-family), sans-serif;
+}
+
+.container {
+    margin: auto;
+    text-align: center;
+}
+  
+p {
+    color: var(--base-text-color);
+    text-align: center;
+    background-color: var(--base-bg-color);
+    margin: auto;
+    font-size: 1.5rem;
+    text-shadow: var(--base-text-shadow);
+}
+  
+textarea {
+    resize: none;
+    font-size: 1rem;
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: var(--workspace-bg-color);
+}
+
+/*---------------------------*/ /* Read Users */ /*---------------------------*/
+#userList {
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    float: left;
+    margin: 10px;
+    border: 1px solid #4fc3fc;
+}
+#userList h2 {
+    padding: 10px;
+    margin: 0;
+    color: white;
+}
+#userList li {
+    padding: 5px 10px;
+    border-top: 1px solid #4fc3fc;
+    cursor: pointer;
+    color: white;
+    font-style: italic;
+}
+#userList li:hover {
+    background: #4fc3fc;
+}
+#goal-toolbar {
+    display:flex;
+    justify-content: center;
+}
+
+
+#goal-in {
+    min-height: 200px;
+    border-width: var(--base-border-width);
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+}
+
+#comm-toolbar {
+    display:flex;
+    justify-content: center;
+}
+
+#comm-in {
+    min-height: 200px;
+    border-width: var(--base-border-width);
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+}
+
+#comm-in > li:hover {
+  background-color: antiquewhite;
+}
+
+/* Add button styling */
+#add-comm-btn,
+#add-goal-btn {
+    fill: rgb(255, 255, 255);
+    border-radius: 50%;
+    transition: background-color 0.1s;
+}
+    
+#add-comm-btn:hover,
+#add-goal-btn:hover {
+    fill: var(--base-hover-color);
+    background-color: rgb( 118, 118, 118);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#add-comm-btn:active,
+#add-goal-btn:active {
+    fill:  rgb(255, 255, 255);
+}
+
+/* ---- Modal for adding avenues ---- */
+  /* The Modal (background) */
+  #comm-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+
+  /* Modal Content/Box */
+  .comm-modal-content {
+    background-color: var(--workspace-bg-color);
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 15px;
+    border: 1px solid rgb(118, 118, 118);
+    width: 90%; /* Could be more or less, depending on screen size */
+    border-radius: 5px; /* Round corners */
+  }
+
+  /* Change datechooser boarder to match other inputs */
+  #comm-date-modal {
+    border-width: var(--base-border-width);
+    border-style: var(--base-border-style);
+    border-color: var(--base-border-color);
+    background-color: var(--workspace-bg-color);
+  }
+
+  #comm-btns {
+    display: flex;
+    justify-content: center;
+  }
+
+  .modal-bts {
+      margin: 0.5rem;
+  }
+  /* Extra rules for aves that are linked to goals */
+  /*#comm-date-modal:read-only {
+    cursor: not-allowed;
+  }
+
+  #comm-date-modal:read-only:focus {
+    outline: none;
+  }*/

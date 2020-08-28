@@ -1,7 +1,5 @@
-let communication_types = ['Email', 'Text', 'Phone Call', 'Facebook', 'Instagram', 'Card', 'Handout', 'Poster','Other'];
-
 // Constructor for Initiative object.  Top tier data structure 
-class Initiative {
+export class Initiative {
    constructor() {
       // groups will evenutally be the default people an initiative is aimed toward
       // goals, messages, and avenues are all map objects so that they can be added and manipulated more easily
@@ -350,7 +348,7 @@ class Initiative {
    };
 };
 
-class Goal {
+export class Goal {
    constructor() {
       // Frequency is going to eventually be some kind of date object to tell how often to schedule this communication
       // Type is the type of communication for this goal Sent is whether the message is sent or not
@@ -413,7 +411,7 @@ class Goal {
    };
 };
  
-class Communication {
+export class Communication {
    constructor( com_type='', subject = '', to_whom = '', from_whom = '', date = '', sent = '',
                goal_key = '', reminder_keys = []) {
       // date is stored as a simple string and converted to a moment object when manipulated client side
