@@ -303,7 +303,13 @@ window.addEventListener('click', function(event) {
   };
 });
 
-/* TODO: add event listener for touch start to close modal when click outside on safari */
+/* When the user clicks anywhere outside of the modal, close it */
+window.addEventListener('touchend', function(event) {
+  if (event.target == commModalUI) {
+    // Close modal
+    closeModal();
+  };
+});
 
 /* Event listener on modal save button */
 document.getElementById('comm-save-modal').addEventListener("click", commModalSave );
