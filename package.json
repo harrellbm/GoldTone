@@ -5,7 +5,8 @@
   "main": "./index.html",
   "scripts": {
     "dev": "webpack --mode development",
-    "start": "webpack-dev-server --mode development --open"
+    "start": "webpack-dev-server --mode development --open",
+    "start-safari": "webpack-dev-server --mode development --open --host='192.168.86.25' --port='8080'"
   },
   "repository": {
     "type": "git",
