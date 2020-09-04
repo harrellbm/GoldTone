@@ -17,7 +17,7 @@
  
 html,
 .fullscreen {
-    display: flex;
+    /*display: flex;*/
     height: 100%;
     margin: 0;
     padding: 0;
@@ -29,9 +29,10 @@ body {
     font-family: var(--base-font-family), sans-serif;
 }
 
-.container {
-    margin: auto;
+#app-content {
+    margin: 5%;
     text-align: center;
+    flex-direction: column;
 }
   
 p {
