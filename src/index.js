@@ -12,6 +12,17 @@ import "firebase/analytics";
 // Add the Firebase products that you want to use
 import "firebase/auth";
 import "firebase/database";
+import "firebaseui";
+
+/* basic service worker, will worry about this later 
+window.onload = () => {
+    'use strict';
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+                 .register('./sw.js');
+    }
+} */
 
 /* Initialize firebase */
 const firebaseConfig = {
@@ -26,16 +37,214 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-/* basic service worker, will worry about this later 
-window.onload = () => {
-    'use strict';
 
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker
-                 .register('./sw.js');
-    }
-} */
+
 let communication_types = ['Email', 'Text', 'Phone Call', 'Facebook', 'Instagram', 'Card', 'Handout', 'Poster','Other'];
+
+
+var uiConfig = {
+  signInOptions: [
+    // Leave the lines as is for the providers you want to offer your users.
+    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+    //firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+    //firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+    //firebase.auth.GithubAuthProvider.PROVIDER_ID,
+    firebase.auth.EmailAuthProvider.PROVIDER_ID,
+    //firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+    //firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
+  ],
+  // tosUrl and privacyPolicyUrl accept either url string or a callback
+  // function.
+  // Terms of service url/callback.
+  tosUrl: '<your-tos-url>',
+  // Privacy policy url/callback.
+  privacyPolicyUrl: function() {
+    window.location.assign('<your-privacy-policy-url>');
+  }
+};
+
+// Initialize the FirebaseUI Widget using Firebase.
+var ui = new firebaseui.auth.AuthUI(firebase.auth());
+// The start method will wait until the DOM is loaded.
+//ui.start('#firebaseui-auth-container', uiConfig);
+//if (ui.isPendingRedirect()) {
+  //ui.start('#firebaseui-auth-container', uiConfig);
+//}
+
+
+/**
+ * initApp handles setting up UI event listeners and registering Firebase auth listeners:
+ *  - firebase.auth().onAuthStateChanged: This listener is called when the user is signed in or
+ *    out, and that is where we update the UI.
+ */
+
+const initApp = function() {
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      // User is signed in.
+      var displayName = user.displayName;
+      var email = user.email;
+      var emailVerified = user.emailVerified;
+      var photoURL = user.photoURL;
+      var uid = user.uid;
+      var phoneNumber = user.phoneNumber;
+      var providerData = user.providerData;
+      user.getIdToken().then(function(accessToken) {
+        document.getElementById('sign-in-status').textContent = 'Signed in';
+        document.getElementById('sign-in-screen').style.display = 'none';
+        document.getElementById('app-content').style.display = 'flex';
+        document.getElementById('account-details').textContent = JSON.stringify({
+          displayName: displayName,
+          email: email,
+          emailVerified: emailVerified,
+          phoneNumber: phoneNumber,
+          photoURL: photoURL,
+          uid: uid,
+          accessToken: accessToken,
+          providerData: providerData
+        }, null, '  ');
+      });
+      
+    } else {
+      // User is signed out.
+      document.getElementById('app-content').style.display = 'none';
+      document.getElementById('sign-in-screen').style.display = 'initial';
+      document.getElementById('sign-in-status').textContent = 'Signed out';
+      document.getElementById('account-details').textContent = 'null';
+      ui.start('#firebaseui-auth-container', uiConfig);
+    }
+  }, function(error) {
+    console.log(error);
+  });
+
+  /* Add event listenter to sign out button to sign out on click */
+  document.getElementById("sign-out").addEventListener("click", function (){
+    firebase.auth().signOut();
+  })
+};
+
+window.addEventListener('load', function() {
+  initApp();
+  
+});
+
+window.addEventListener('beforeunload', function(){
+  console.log(firebase.auth().currentUser)
+})
+
+
+
+/**
+ * Handles the sign in button press.
+ */
+function toggleSignIn() {
+  if (firebase.auth().currentUser) {
+    // [START signout]
+    firebase.auth().signOut();
+    // [END signout]
+  } else {
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('password').value;
+    if (email.length < 4) {
+      alert('Please enter an email address.');
+      return;
+    }
+    if (password.length < 4) {
+      alert('Please enter a password.');
+      return;
+    }
+    // Sign in with email and pass.
+    // [START authwithemail]
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // [START_EXCLUDE]
+      if (errorCode === 'auth/wrong-password') {
+        alert('Wrong password.');
+      } else {
+        alert(errorMessage);
+      }
+      console.log(error);
+      document.getElementById('quickstart-sign-in').disabled = false;
+      // [END_EXCLUDE]
+    });
+    // [END authwithemail]
+  }
+  document.getElementById('quickstart-sign-in').disabled = true;
+}
+
+/**
+ * Handles the sign up button press.
+ */
+function handleSignUp() {
+  var email = document.getElementById('email').value;
+  var password = document.getElementById('password').value;
+  if (email.length < 4) {
+    alert('Please enter an email address.');
+    return;
+  }
+  if (password.length < 4) {
+    alert('Please enter a password.');
+    return;
+  }
+  // Create user with email and pass.
+  // [START createwithemail]
+  firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // [START_EXCLUDE]
+    if (errorCode == 'auth/weak-password') {
+      alert('The password is too weak.');
+    } else {
+      alert(errorMessage);
+    }
+    console.log(error);
+    // [END_EXCLUDE]
+  });
+  // [END createwithemail]
+}
+
+/**
+ * Sends an email verification to the user.
+ */
+function sendEmailVerification() {
+  // [START sendemailverification]
+  firebase.auth().currentUser.sendEmailVerification().then(function() {
+    // Email Verification sent!
+    // [START_EXCLUDE]
+    alert('Email Verification Sent!');
+    // [END_EXCLUDE]
+  });
+  // [END sendemailverification]
+}
+
+function sendPasswordReset() {
+  var email = document.getElementById('email').value;
+  // [START sendpasswordemail]
+  firebase.auth().sendPasswordResetEmail(email).then(function() {
+    // Password Reset Email Sent!
+    // [START_EXCLUDE]
+    alert('Password Reset Email Sent!');
+    // [END_EXCLUDE]
+  }).catch(function(error) {
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // [START_EXCLUDE]
+    if (errorCode == 'auth/invalid-email') {
+      alert(errorMessage);
+    } else if (errorCode == 'auth/user-not-found') {
+      alert(errorMessage);
+    }
+    console.log(error);
+    // [END_EXCLUDE]
+  });
+  // [END sendpasswordemail];
+}
+
+
 
 // Grab references to database documents 
 const dbRef = firebase.database().ref();

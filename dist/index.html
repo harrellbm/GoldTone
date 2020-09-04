@@ -14,9 +14,17 @@
         <meta name="apple-mobile-web-app-title" content="Hello World"> 
         <meta name="msapplication-TileImage" content="assets/hello-icon-144.png">  
         <meta name="msapplication-TileColor" content="#FFFFFF">
+        <link type="text/css" rel="stylesheet" href="node_modules/firebaseui/dist/firebaseui.css" />
     </head>
     <body class="fullscreen">
-        <div class="container">
+        <!-- The surrounding HTML is left untouched by FirebaseUI.
+        Your app may use that space for branding, controls and other customizations.-->
+        <div id="sign-in-screen">
+            <span id="sign-in-status"></span>
+            <div id="firebaseui-auth-container"></div>
+        </div>
+        <div id="app-content" style="display: none;">
+            <input id="sign-out" type="button" value="Sign Out"></input>
             <div id="tabs">
                 <span> | This is where | </span>
                 <span> | Tabs will go | </span>
@@ -96,20 +104,7 @@
             </div>
 
             <ul id="userList"></ul>
+            <textarea id="account-details"></textarea>
         </div>
-
-        <!-- The core Firebase JS SDK is always required and must be listed first -->
-        <!-- script src="/__/firebase/7.19.0/firebase-app.js"></script -->
-
-        <!-- TODO: Add SDKs for Firebase products that you want to use
-            https://firebase.google.com/docs/web/setup#available-libraries -->
-              
-         <!-- Add Firebase products that you want to use -->
-        <!-- script src="/__/firebase/7.19.0/firebase-analytics.js"></script>
-        <script src="/__/firebase/7.19.0/firebase-auth.js"></script>
-        <script src="/__/firebase/7.19.0/firebase-database.js"></script -->
-
-        <!-- Initialize Firebase -->
-        <!-- script src="/__/firebase/init.js"></script -->
     <script src="main.js"></script></body>
 </html>
