@@ -1,5 +1,6 @@
 import { Communication } from "./objectTemplate";
 import "./style.css";
+import "../node_modules/firebaseui/dist/firebaseui.css" // Stylesheet for firbase ui
 import moment from "moment";
 import Swal from "sweetalert2";
 
@@ -53,6 +54,7 @@ var uiConfig = {
     //firebase.auth.PhoneAuthProvider.PROVIDER_ID,
     //firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
   ],
+  signInFlow: 'popup',
   // tosUrl and privacyPolicyUrl accept either url string or a callback
   // function.
   // Terms of service url/callback.
@@ -108,7 +110,7 @@ const initApp = function() {
     } else {
       // User is signed out.
       document.getElementById('app-content').style.display = 'none';
-      document.getElementById('sign-in-screen').style.display = 'initial';
+      document.getElementById('sign-in-screen').style.display = 'flex';
       document.getElementById('sign-in-status').textContent = 'Signed out';
       document.getElementById('account-details').textContent = 'null';
       ui.start('#firebaseui-auth-container', uiConfig);
