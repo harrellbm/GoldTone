@@ -211,7 +211,7 @@ const goalRef = dbRef.child('goals');
 function goalClicked(e) {
   /* Get database reference */
   var goalId = e.target.getAttribute("id");
-  console.log(goalId)
+  //console.log(goalId)
   const goalRef = dbRef.child('goals/' + goalId);
 
   /* Build goal object from database to send to modal */
@@ -219,7 +219,7 @@ function goalClicked(e) {
   goalRef.on("child_added", snap => {
     goalObj[snap.key] = snap.val();
   });
-
+  console.log('loaded goal', goalObj)
   /* launch the modal */
   goalModalLaunch("list_launch", goalId, goalObj);
 };
@@ -343,8 +343,8 @@ function goalResetModal () {
    
   // Reset modal
   goalId.value = ''; 
-  commId.value = '1';
-  remId.value = '1';  
+  commId.value = '';
+  remId.value = '';  
   name.value = ''; 
   type.options.selectedIndex = 0;
   subject.value = ''; 
@@ -404,7 +404,14 @@ function goalModalSave (){
     // If no id provided assume this is a new communication
     if (goalId.value == '' || goalId.value == undefined ){
       // New Goal object 
-      const newGoal = new Goal(commId.value, remId.value, name.value, type.value, subject.value,
+      // Make sure that id values are not undefined for storage in database 
+      if (commId.value == undefined) {
+        commId.value = '';
+      }
+      if (remId.value == undefined) {
+        remId.value = '';
+      }
+      const newGoal = new Goal(name.value, commId.value, remId.value, type.value, subject.value,
                                toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
                                freq.value, denomination.value, reminder.value, reminderDenomination.value); 
       console.log("new goal", newGoal);
@@ -414,7 +421,7 @@ function goalModalSave (){
       });
     } else {
       // Update communication in database 
-      const updateGoal = new Goal(commId.value, remId.value, name.value, type.value, subject.value,
+      const updateGoal = new Goal(name.value, commId.value, remId.value, type.value, subject.value,
                                   toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
                                   freq.value, denomination.value, reminder.value, reminderDenomination.value); 
       console.log("communication to update", updateGoal);

@@ -349,14 +349,14 @@ export class Initiative {
 };
 
 export class Goal {
-   constructor(comm_keys, reminder_keys, name, type, subject, to_Whom, from_whom, start_date,
+   constructor(name, comm_keys, reminder_keys, type, subject, to_Whom, from_whom, start_date,
                until_date, frequency, freq_denomination, reminder, reminder_denomination) {
       // Frequency is going to eventually be some kind of date object to tell how often to schedule this communication
       // Type is the type of communication for this goal Sent is whether the message is sent or not
       // Reminder will be a way to hold the reminders that you set for this goal 
+      this.name = name;
       this.comm_keys = comm_keys;
       this.reminder_keys = reminder_keys;
-      this.name = name;
       this.type = type;
       this.subject = subject;
       this.to_Whom = to_Whom;
