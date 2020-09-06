@@ -56,6 +56,7 @@ var uiConfig = {
     //firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
   ],
   signInFlow: 'popup',
+  credentialHelper: firebase.auth.CredentialHelper.NONE,
   // tosUrl and privacyPolicyUrl accept either url string or a callback
   // function.
   // Terms of service url/callback.
@@ -128,11 +129,10 @@ const initApp = function() {
 
 window.addEventListener('load', function() {
   initApp();
-  
 });
 
 
-/*-------------------*/ /* Initialize Firebase Database */ /*-----------------*/
+/* ----------------- */ /* Initialize Firebase Database */ /* --------------- */
 // Grab references to database documents 
 const dbRef = firebase.database().ref();
 
@@ -142,7 +142,7 @@ const remRef = dbRef.child('reminders');
 
 /* TODO: add event listner and function to handle adding goal */
 
-/* --------- */ /* Goal Related Events and Functions */ /* --------- */
+/* -------------- */ /* Goal Related Events and Functions */ /* -------------- */
 
 /* Get reference to goals document in database */
 const goalRef = dbRef.child('goals');
@@ -166,7 +166,6 @@ function goalClicked(e) {
   /* launch the modal */
   goalModalLaunch("list_launch", goalId, goalObj);
 };
-
 
 /* ---------- Event Listeners ---------- */
 
