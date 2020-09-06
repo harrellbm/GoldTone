@@ -45,6 +45,30 @@ firebase.initializeApp(firebaseConfig);
 
 /*---------------------*/ /* Initialize Firebase Auth */ /*--------------------*/
 var uiConfig = {
+  callbacks: {
+    signInSuccessWithAuthResult: function(authResult, redirectUrl) {
+      var user = authResult.user;
+      var credential = authResult.credential;
+      var isNewUser = authResult.additionalUserInfo.isNewUser;
+      var providerId = authResult.additionalUserInfo.providerId;
+      var operationType = authResult.operationType;
+      console.log(user, '\ncredential', credential, '\n Is new user', isNewUser, '\nprovider id', providerId, '\noperation type', operationType)
+      // Do something with the returned AuthResult.
+      loadFromDatabase();
+      // Return type determines whether we continue the redirect automatically
+      // or whether we leave that to developer to handle.
+      return true;
+    },
+    signInFailure: function(error) {
+      // Some unrecoverable error occurred during sign-in.
+      // Return a promise when error handling is completed and FirebaseUI
+      // will reset, clearing any UI. This commonly occurs for error code
+      // 'firebaseui/anonymous-upgrade-merge-conflict' when merge conflict
+      // occurs. Check below for more details on this.
+      return handleUIError(error);
+    }
+  },
+  credentialHelper: firebaseui.auth.CredentialHelper.NONE,
   signInOptions: [
     // Leave the lines as is for the providers you want to offer your users.
     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -56,7 +80,6 @@ var uiConfig = {
     //firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID
   ],
   signInFlow: 'popup',
-  credentialHelper: firebase.auth.CredentialHelper.NONE,
   // tosUrl and privacyPolicyUrl accept either url string or a callback
   // function.
   // Terms of service url/callback.
@@ -124,6 +147,8 @@ const initApp = function() {
   /* Add event listenter to sign out button to sign out on click */
   document.getElementById("sign-out").addEventListener("click", function (){
     firebase.auth().signOut();
+    document.getElementById('goal-in').innerHTML = '';
+    document.getElementById('comm-in').innerHTML = '';
   })
 };
 
@@ -139,8 +164,40 @@ const dbRef = firebase.database().ref();
 /* Get reference to Reminders document in database */
 const remRef = dbRef.child('reminders');
 
+/* ---------- Common Database functions ---------- */
 
-/* TODO: add event listner and function to handle adding goal */
+function loadFromDatabase () {
+  /* Get all children from goals document and place in UI */
+  const goalRef = dbRef.child('goals');
+  goalRef.on("child_added", snap => {
+    const goalIn = document.getElementById("goal-in");
+    let goal = snap.val();
+    //console.log("database snapshot of goals", goal);
+
+    let goalUi = document.createElement("div");
+    goalUi.innerHTML = goal.name;
+    goalUi.setAttribute("id", snap.key);
+    goalUi.addEventListener("click", goalClicked);
+
+    goalIn.append(goalUi);
+  });
+
+  /* Get all children from communications document and place in UI */
+  const comRef = dbRef.child('communications');
+  comRef.on("child_added", snap => {
+    const commIn = document.getElementById("comm-in");
+    let communication = snap.val();
+    //console.log("database snapshot of communications", communication);
+
+    let commUi = document.createElement("div");
+    commUi.innerHTML = communication.subject;
+    commUi.setAttribute("id", snap.key);
+    commUi.addEventListener("click", comClicked);
+
+    commIn.append(commUi);
+  });
+};
+
 
 /* -------------- */ /* Goal Related Events and Functions */ /* -------------- */
 
