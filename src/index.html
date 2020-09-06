@@ -24,7 +24,9 @@
             <div id="firebaseui-auth-container"></div>
         </div>
         <div id="app-content" style="display: none;">
-            <input id="sign-out" type="button" value="Sign Out"></input>
+            <div id="sign-out-container">
+                <input id="sign-out" type="button" value="Sign Out"></input>
+            </div>
             <div id="tabs">
                 <span> | This is where | </span>
                 <span> | Tabs will go | </span>
@@ -41,7 +43,7 @@
                     </div>
                     <span>Sort</span>
                 </div>
-                <div id="goal-in">goals will go here</div>
+                <div id="goal-in"></div>
             </section>
             <!-- Communications section -->
             <section id="comm-sec">
@@ -58,11 +60,78 @@
                 <div id="rem-in"></div>
             </section>
             
-             <!-- Modal for adding and editing communications -->
+             <!-- Modal for adding and editing Goals -->
+             <div id="goal-modal">
+                <div id="goal-id" style="position: fixed; display: none;"></div>
+                <div id="linked-comm-id" style="position: fixed; display: none;" value='x'></div>
+                <div id="goal-linked-reminders-id" style="position: fixed; display: none;" value='x'></div>
+                <!-- Modal content -->
+                <div class="goal-modal-content">
+                    <div style="display: flex; justify-content: flex-end;">
+                        <span class="close">&times;</span>
+                    </div>
+                    <div>
+                        <label for="goal-name-modal">Name</label>
+                        <textarea id="goal-name-modal" class="goal-modal-input" data-key="name" placeholder="What is your goal's name?"></textarea>  
+                    </div>
+                    <div>
+                        <label for="goal-type-modal">Type</label>
+                        <select id="goal-type-modal" class="goal-modal-input" data-key="type"></select>
+                    </div>
+                    <div>
+                        <label for="goal-subject-modal">Subject</label>
+                        <textarea id="goal-subject-modal" class="goal-modal-input" data-key="subject" placeholder="What is your goal about?"></textarea>  
+                    </div>
+                    <div>
+                        <label for="goal-to-whom-modal">To</label>
+                        <textarea id="goal-to-whom-modal" class="goal-modal-input" data-key="to_whom" placeholder="Who is it to?"></textarea>  
+                    </div>
+                    <div>
+                        <label for="goal-from-whom-modal">From</label>
+                        <textarea id="goal-from-whom-modal" class="goal-modal-input" data-key="from_whom" placeholder="Who is sending it?"></textarea>  
+                    </div>
+                    <div>
+                        <label for="goal-start-date-modal">Start Date</label>
+                        <input id="goal-start-date-modal" class="goal-modal-input" data-key="start_date" type="date"></input>
+                    </div>
+                    <div>
+                        <label for="goal-until-date-modal">Until Date</label>
+                        <input id="goal-until-date-modal" class="goal-modal-input" data-key="until_date" type="date"></input>  
+                    </div>
+                    <div>
+                        <label for="goal-frequency-modal">Frequancy</label>
+                        <input id="goal-frequency-modal" class="goal-modal-input" data-key="freq" type="number" min="1" value="1"></input>  
+                        <select id="goal-frequency-denomination-modal" class="goal-modal-input" data-key="denomination">
+                            <option value="days">days</option>
+                            <option value="weeks">weeks</option>
+                            <option value="months">months</option>
+                            <option value="years">years</option>
+                        </select>  
+                    </div>
+                    <div>
+                        <label for="goal-reminder-modal">Reminder</label>
+                        <input id="goal-reminder-modal" class="goal-modal-input" data-key="amount" type="number" min="1" value="1"></input>  
+                        <select id="goal-reminder-denomination-modal" class="goal-modal-input" data-key="denomination">
+                            <option value="minutes">minutes</option>
+                            <option value="hours">hours</option>
+                            <option value="days">days</option>
+                            <option value="weeks">weeks</option>
+                            <option value="months">months</option>
+                            <option value="years">years</option>
+                        </select>  
+                    </div>
+                    <div id="goal-btns"> 
+                        <input id="goal-save-modal" class="modal-bts" type="button"  value="Save"> 
+                        <input id="goal-delete-modal" class="modal-bts" type="button" value="Delete">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for adding and editing communications -->
             <div id="comm-modal">
                 <div id="comm-id" style="position: fixed; display: none;"></div>
                 <div id="linked-goal-id" style="position: fixed; display: none;"></div>
-                <div id="linked-reminders-id" style="position: fixed; display: none;"></div>
+                <div id="comm-linked-reminders-id" style="position: fixed; display: none;"></div>
                 <!-- Modal content -->
                 <div class="comm-modal-content">
                     <div style="display: flex; justify-content: flex-end;">

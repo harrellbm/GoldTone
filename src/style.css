@@ -29,6 +29,22 @@ body {
     font-family: var(--base-font-family), sans-serif;
 }
 
+#sign-in-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10%;
+}
+
+#sign-out-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#sign-out {
+    margin-bottom: 0.5rem;
+}
+
 #app-content {
     margin: 5%;
     text-align: center;
@@ -100,7 +116,7 @@ textarea {
     border-color: var(--base-border-color);
 }
 
-#comm-in > li:hover {
+#comm-in > div:hover {
   background-color: antiquewhite;
 }
 
@@ -125,8 +141,9 @@ textarea {
     fill:  rgb(255, 255, 255);
 }
 
-/* ---- Modal for adding avenues ---- */
+/* ---- Modals for adding goals and communications ---- */
   /* The Modal (background) */
+  #goal-modal,
   #comm-modal {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -141,6 +158,7 @@ textarea {
   }
 
   /* Modal Content/Box */
+  .goal-modal-content,
   .comm-modal-content {
     background-color: var(--workspace-bg-color);
     margin: 15% auto; /* 15% from the top and centered */
@@ -150,7 +168,25 @@ textarea {
     border-radius: 5px; /* Round corners */
   }
 
+  /* Close button styling */
+.close {
+    border-radius: 50%;
+    transition: background-color 0.1s;
+    font-size: 2rem;
+    padding: 0.05rem 0.55rem;
+}
+    
+.close:hover {
+    color: white;
+    background-color: rgb( 118, 118, 118);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
   /* Change datechooser boarder to match other inputs */
+  #goal-start-date-modal,
+  #goal-until-date-modal,
   #comm-date-modal {
     border-width: var(--base-border-width);
     border-style: var(--base-border-style);
@@ -158,6 +194,7 @@ textarea {
     background-color: var(--workspace-bg-color);
   }
 
+  #goal-btns,
   #comm-btns {
     display: flex;
     justify-content: center;

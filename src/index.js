@@ -1,4 +1,4 @@
-import { Communication } from "./objectTemplate";
+import { Communication, Goal } from "./objectTemplate";
 import "./style.css";
 import "../node_modules/firebaseui/dist/firebaseui.css" // Stylesheet for firbase ui
 import moment from "moment";
@@ -142,6 +142,324 @@ const remRef = dbRef.child('reminders');
 
 /* TODO: add event listner and function to handle adding goal */
 
+/* --------- */ /* Goal Related Events and Functions */ /* --------- */
+
+/* Get reference to goals document in database */
+const goalRef = dbRef.child('goals');
+
+
+/* ---------- Functions ---------- */
+
+/* When goal listed in UI is clicked get database reference and lauch modal */
+function goalClicked(e) {
+  /* Get database reference */
+  var goalId = e.target.getAttribute("id");
+  console.log(goalId)
+  const goalRef = dbRef.child('goals/' + goalId);
+
+  /* Build goal object from database to send to modal */
+  let goalObj = {};
+  goalRef.on("child_added", snap => {
+    goalObj[snap.key] = snap.val();
+  });
+
+  /* launch the modal */
+  goalModalLaunch("list_launch", goalId, goalObj);
+};
+
+
+/* ---------- Event Listeners ---------- */
+
+/* Listen for new goals in database then update UI */
+goalRef.on("child_added", snap => {
+  const goalIn = document.getElementById("goal-in");
+  let goal = snap.val();
+  //console.log("database snapshot of goals", goal);
+
+  let goalUi = document.createElement("div");
+  goalUi.innerHTML = goal.name;
+  goalUi.setAttribute("id", snap.key);
+  goalUi.addEventListener("click", goalClicked);
+
+  goalIn.append(goalUi); 
+  
+});
+
+/* TODO: need to add on child updated listener to update ui on updates */
+
+/* Listen for deleted communications in database then update UI */
+goalRef.on("child_removed", snap => {
+  const removedGoalUI = document.getElementById(snap.key);
+  removedGoalUI.remove(removedGoalUI);
+});
+
+
+/* ------------------------ */ /* Modal for Goals */ /* --------------------- */
+
+// Set communication type dropdown options from list defined in communication_types variable
+const goalTypeUI = document.getElementById("goal-type-modal");
+for (let i in communication_types){
+  let opElem = document.createElement("option");
+  let opText = communication_types[i]
+  opElem.setAttribute("value", `${opText}`);
+  opElem.innerHTML = `${opText}`;
+  goalTypeUI.appendChild(opElem);
+};
+
+/* Get the modal element for easy access later */
+const goalModalUI = document.getElementById("goal-modal"); 
+
+
+/* ---------- Functions ---------- */
+
+/* Function to Launch modal */
+function goalModalLaunch (event, goalId='', goalObj={}) {
+  
+  // If launching from an old communication fill the modal with values 
+  if (goalId != '') {
+    const goalIdUi = document.getElementById("goal-id"); 
+    const commId = document.getElementById("linked-comm-id");
+    const remId = document.getElementById("goal-linked-reminders-id");  
+    const name = document.getElementById("goal-name-modal");
+    const type = document.getElementById("goal-type-modal");
+    const subject = document.getElementById("goal-subject-modal");
+    const toWhom = document.getElementById("goal-to-whom-modal");
+    const fromWhom = document.getElementById("goal-from-whom-modal");
+    const startDate = document.getElementById("goal-start-date-modal");
+    const untilDate = document.getElementById("goal-until-date-modal");          
+    const freq = document.getElementById("goal-frequency-modal");  
+    const denomination = document.getElementById("goal-frequency-denomination-modal");            
+    const reminder = document.getElementById("goal-reminder-modal");  
+    const reminderDenomination = document.getElementById("goal-reminder-denomination-modal");           
+
+    goalIdUi.value = goalId; 
+    commId.value = goalObj["comm_keys"];
+    remId.value = goalObj["reminder_keys"];
+    name.value = goalObj["name"];
+    type.value = goalObj["type"];
+    subject.value = goalObj["subject"];
+    toWhom.value = goalObj["to_Whom"];
+    fromWhom.value = goalObj["from_whom"];
+    let momStart = moment(goalObj["start_date"], 'ddd MMM DD YYYY HH:mm:ss'); // Adjust to current timezone from saved timezone
+    startDate.value = momStart.format('YYYY-MM-DD');
+    let momUntil = moment(goalObj["until_date"], 'ddd MMM DD YYYY HH:mm:ss');
+    untilDate.value = momUntil.format('YYYY-MM-DD');          
+    freq.value = goalObj["frequency"]; 
+    denomination.value = goalObj["freq_denomination"];           
+    reminder.value = goalObj["reminder"]; 
+    reminderDenomination.value = goalObj["reminder_denomination"]; 
+  } else if (goalId == '') {
+    /* Hide delete button because we are launching to add a new goal */
+    document.getElementById('goal-delete-modal').style.display = "none";
+    document.getElementById('goal-delete-modal').style.position = "absolute";
+  }   
+  // Display modal
+  goalModalUI.style.display = "block";
+};
+
+/* Function to Close modal */
+function goalCloseModal (){
+  // Close modal
+  goalModalUI.style.display = "none";
+  goalResetModal();
+}
+
+/* Function to reset Modal after closing */
+function goalResetModal () {
+  // Refresh calendar 
+  //calendar.render();
+
+  // Get modal fields
+  const goalId = document.getElementById("goal-id"); 
+  const commId = document.getElementById("linked-comm-id");
+  const remId = document.getElementById("goal-linked-reminders-id");  
+  const name = document.getElementById("goal-name-modal");
+  const type = document.getElementById("goal-type-modal");
+  const subject = document.getElementById("goal-subject-modal");
+  const toWhom = document.getElementById("goal-to-whom-modal");
+  const fromWhom = document.getElementById("goal-from-whom-modal");
+  const startDate = document.getElementById("goal-start-date-modal");
+  const untilDate = document.getElementById("goal-until-date-modal");          
+  const freq = document.getElementById("goal-frequency-modal");  
+  const denomination = document.getElementById("goal-frequency-denomination-modal");            
+  const reminder = document.getElementById("goal-reminder-modal");  
+  const reminderDenomination = document.getElementById("goal-reminder-denomination-modal");    
+   
+  // Reset modal
+  goalId.value = ''; 
+  commId.value = '1';
+  remId.value = '1';  
+  name.value = ''; 
+  type.options.selectedIndex = 0;
+  subject.value = ''; 
+  toWhom.value = ''; 
+  fromWhom.value = ''; 
+  startDate.value = ''; 
+  untilDate.value = '';   
+  freq.value = 1;   
+  denomination.options.selectedIndex = 0;            
+  reminder.value = 1;   
+  reminderDenomination.options.selectedIndex = 0;
+     
+  // Reset backgroup of name, subject, start date, and until date incase they had been changed on unfilled attempt to save
+  name.style.backgroundColor = 'rgb(245, 245,230)';
+  subject.style.backgroundColor = 'rgb(245, 245,230)';
+  startDate.style.backgroundColor = 'rgb(245, 245,230)';
+  untilDate.style.backgroundColor = 'rgb(245, 245,230)';
+
+  // Resent delete button if hidden when launching modal from add button
+  document.getElementById('goal-delete-modal').style.display = "block";
+  document.getElementById('goal-delete-modal').style.position = "initial";
+  // Reset modal if it was opened from an communication connected with a goal 
+  /*type.disabled = false;
+  description.readOnly = false;
+  date.readOnly = false;*/
+};
+
+/* Function to save communication from modal. Then update database. */
+function goalModalSave (){
+  const goalId = document.getElementById("goal-id"); 
+  const commId = document.getElementById("linked-comm-id");
+  const remId = document.getElementById("goal-linked-reminders-id");  
+  const name = document.getElementById("goal-name-modal");
+  const type = document.getElementById("goal-type-modal");
+  const subject = document.getElementById("goal-subject-modal");
+  const toWhom = document.getElementById("goal-to-whom-modal");
+  const fromWhom = document.getElementById("goal-from-whom-modal");
+  const startDate = document.getElementById("goal-start-date-modal");
+  const untilDate = document.getElementById("goal-until-date-modal");          
+  const freq = document.getElementById("goal-frequency-modal");  
+  const denomination = document.getElementById("goal-frequency-denomination-modal");            
+  const reminder = document.getElementById("goal-reminder-modal");  
+  const reminderDenomination = document.getElementById("goal-reminder-denomination-modal");    
+
+  // Grab reference to database document
+  const goalRef = dbRef.child('goals');
+  console.log('goal id', goalId.value, '\ncomm id', commId.value, '\nreminder id', remId.value, 
+              '\nname', name.value, '\ntype', type.value, '\nsubject', subject.value, '\nto whom', toWhom.value, 
+              '\nfrom whom', fromWhom.value, '\nstart date', startDate.value, '\nuntil date', untilDate.value, 
+              '\nfrequancy', freq.value, '\nfrequancy denomination', denomination.value, '\nreminder', reminder.value,
+              '\nreminder denomination', reminderDenomination.value);
+  // Make sure name, subject, start date, and until date are filled out 
+  if (name.value != '' && subject.value != '' && startDate.value != '' &&  untilDate.value != ''){
+    // Turn dates into moment object to save time stamp before being placed in database 
+    let momStart = moment(startDate.value, 'YYYY-MM-DD', true); 
+    let momUntil = moment(untilDate.value, 'YYYY-MM-DD', true);
+    // If no id provided assume this is a new communication
+    if (goalId.value == '' || goalId.value == undefined ){
+      // New Goal object 
+      const newGoal = new Goal(commId.value, remId.value, name.value, type.value, subject.value,
+                               toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
+                               freq.value, denomination.value, reminder.value, reminderDenomination.value); 
+      console.log("new goal", newGoal);
+      // Add goal to database 
+      goalRef.push(newGoal, function () {
+        console.log("data has been inserted");
+      });
+    } else {
+      // Update communication in database 
+      const updateGoal = new Goal(commId.value, remId.value, name.value, type.value, subject.value,
+                                  toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
+                                  freq.value, denomination.value, reminder.value, reminderDenomination.value); 
+      console.log("communication to update", updateGoal);
+      const goalDb = goalRef.child(goalId.value);
+      goalDb.update(updateGoal);
+
+      // Update Schedule object on calendar 
+      /*calendar.updateSchedule(aveId.value, '1', {
+        title: description.value,
+        start: momDate.format('ddd DD MMM YYYY HH:mm:ss'),
+        end:  momDate.format('ddd DD MMM YYYY HH:mm:ss')
+      });*/
+    }; 
+    // Close modal
+    goalModalUI.style.display = "none";
+    goalResetModal();
+  } else { // Change backgroup of name, subject, start date, or until date if not filled out 
+      if (name.value == ''){
+        name.style.backgroundColor = 'rgb(225, 160, 140)';
+      };
+      if (subject.value == ''){
+        subject.style.backgroundColor = 'rgb(225, 160, 140)';
+      };
+      if (startDate.value == ''){
+        startDate.style.backgroundColor = 'rgb(225, 160, 140)';
+      };
+      if (untilDate.value == ''){
+        untilDate.style.backgroundColor = 'rgb(225, 160, 140)';
+      };
+  };
+};
+
+// Function to delete communication from modal. Then update database */
+function goalModalDelete (){
+  // Launch confirmation popup
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You won\'t be able to undo this!?', 
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#8bcbe0',
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, Cancel!',
+    cancelButtonColor: '#d33'
+  })
+  .then(function (value) {
+    if (value.isConfirmed == false) { // Escape deletion 
+      return
+    } else { // Proceed with deletion 
+      // Get id from DOM
+      const goalId = document.getElementById("goal-id");
+      // Remove communication from UI
+      /*let messAve = document.getElementById(`avenue${aveId.value}`);
+      messAve.parentElement.removeChild(messAve);*/
+
+      // Delete Schedule object on calendar 
+      /*calendar.deleteSchedule(aveId.value, '1');*/
+      
+      // Remove communication from database 
+      const goalRef = dbRef.child('goals/' + goalId.value);
+      goalRef.remove();
+      
+      // Close modal
+      goalModalUI.style.display = "none";
+      goalResetModal();
+  
+      return
+    }; 
+  });
+};
+
+/* ---------- Event listeners ---------- */
+
+/* Attach event listener to X button to close modal */
+document.getElementsByClassName("close")[0].addEventListener("click", goalCloseModal);
+
+/* When the user clicks anywhere outside of the modal, close it */
+window.addEventListener('click', function(event) {
+  if (event.target == goalModalUI) {
+    // Close modal
+    goalCloseModal();
+  };
+});
+
+/* When the user clicks anywhere outside of the modal, close it */
+window.addEventListener('touchend', function(event) {
+  if (event.target == goalModalUI) {
+    // Close modal
+    goalCloseModal();
+  };
+});
+
+/* Event listener on modal save button */
+document.getElementById('goal-save-modal').addEventListener("click", goalModalSave );
+      
+/* Event listener on modal delete button */
+document.getElementById('goal-delete-modal').addEventListener("click", goalModalDelete );
+
+/* Event listener on add button */
+document.getElementById("add-goal-btn").addEventListener("click", goalModalLaunch);
+
 
 /* --------- */ /* Communication Related Events and Functions */ /* --------- */
 
@@ -155,6 +473,7 @@ const comRef = dbRef.child('communications');
 function comClicked(e) {
   /* Get database reference */
   var comId = e.target.getAttribute("id");
+  console.log(comId)
   const comRef = dbRef.child('communications/' + comId);
 
   /* Build communication object from database to send to modal */
@@ -176,12 +495,13 @@ comRef.on("child_added", snap => {
   let communication = snap.val();
   //console.log("database snapshot of communications", communication);
 
-	let $li = document.createElement("li");
-	$li.innerHTML = communication.subject;
-	$li.setAttribute("id", snap.key);
-	$li.addEventListener("click", comClicked);
+  let commUi = document.createElement("div");
+  commUi.innerHTML = communication.subject;
+  commUi.setAttribute("id", snap.key);
+  commUi.addEventListener("click", comClicked);
 
-  commIn.append($li);
+  commIn.append(commUi); 
+  
 });
 
 /* TODO: need to add on child updated listener to update ui on updates */
@@ -195,12 +515,11 @@ comRef.on("child_removed", snap => {
 
 /* ------------------- */ /* Modal for Communications */ /* ----------------- */
 
-// Set communication type dropdown options from list defined in objectTemplate.js 
+// Set communication type dropdown options from list defined in communication_types variable 
 const comTypeUI = document.getElementById("comm-type-modal");
-let options = communication_types;
-for (let i in options){
+for (let i in communication_types){
   let opElem = document.createElement("option");
-  let opText = options[i]
+  let opText = communication_types[i]
   opElem.setAttribute("value", `${opText}`);
   opElem.innerHTML = `${opText}`;
   comTypeUI.appendChild(opElem);
@@ -221,7 +540,7 @@ function commModalLaunch (event, comId='', comObj={}) {
   if (comId != '') {
     const commId = document.getElementById("comm-id");
     const goalId = document.getElementById("linked-goal-id");
-    const remId = document.getElementById("linked-reminders-id");
+    const remId = document.getElementById("comm-linked-reminders-id");
     const type = document.getElementById("comm-type-modal");
     const subject = document.getElementById("comm-subject-modal");
     const toWhom = document.getElementById("comm-to-whom-modal");
@@ -249,21 +568,21 @@ function commModalLaunch (event, comId='', comObj={}) {
 };
 
 /* Function to Close modal */
-function closeModal (){
+function comCloseModal (){
   // Close modal
   commModalUI.style.display = "none";
-  resetModal();
+  comResetModal();
 }
 
 /* Function to reset Modal after closing */
-function resetModal () {
+function comResetModal () {
   // Refresh calendar 
   //calendar.render();
 
   // Get modal fields
   const commId = document.getElementById("comm-id");
   const goalId = document.getElementById("linked-goal-id");
-  const remId = document.getElementById("linked-reminders-id");
+  const remId = document.getElementById("comm-linked-reminders-id");
   const type = document.getElementById("comm-type-modal");
   const subject = document.getElementById("comm-subject-modal");
   const toWhom = document.getElementById("comm-to-whom-modal");
@@ -297,7 +616,7 @@ function resetModal () {
 function commModalSave (){
   const commId = document.getElementById("comm-id");
   const goalId = document.getElementById("linked-goal-id");
-  const remId = document.getElementById("linked-reminders-id");
+  const remId = document.getElementById("comm-linked-reminders-id");
   const type = document.getElementById("comm-type-modal");
   const subject = document.getElementById("comm-subject-modal");
   const toWhom = document.getElementById("comm-to-whom-modal");
@@ -336,7 +655,7 @@ function commModalSave (){
     }; 
     // Close modal
     commModalUI.style.display = "none";
-    resetModal();
+    comResetModal();
   } else { // Change backgroup of date or description if not filled out 
       if (date.value == ''){
         date.style.backgroundColor = 'rgb(225, 160, 140)';
@@ -379,7 +698,7 @@ function commModalDelete (){
       
       // Close modal
       commModalUI.style.display = "none";
-      resetModal();
+      comResetModal();
   
       return
     }; 
@@ -389,13 +708,13 @@ function commModalDelete (){
 /* ---------- Event listeners ---------- */
 
 /* Attach event listener to X button to close modal */
-document.getElementsByClassName("close")[0].addEventListener("click", closeModal);
+document.getElementsByClassName("close")[1].addEventListener("click", comCloseModal);
 
 /* When the user clicks anywhere outside of the modal, close it */
 window.addEventListener('click', function(event) {
   if (event.target == commModalUI) {
     // Close modal
-    closeModal();
+    comCloseModal();
   };
 });
 
@@ -403,7 +722,7 @@ window.addEventListener('click', function(event) {
 window.addEventListener('touchend', function(event) {
   if (event.target == commModalUI) {
     // Close modal
-    closeModal();
+    comCloseModal();
   };
 });
 
