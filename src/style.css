@@ -93,7 +93,8 @@ textarea {
 }
 #goal-toolbar {
     display:flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: flex-end;
 }
 
 
@@ -106,7 +107,8 @@ textarea {
 
 #comm-toolbar {
     display:flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: flex-end;
 }
 
 #comm-in {
