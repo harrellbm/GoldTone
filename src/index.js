@@ -224,6 +224,7 @@ function goalClicked(e) {
   goalModalLaunch("list_launch", goalId, goalObj);
 };
 
+
 /* ---------- Event Listeners ---------- */
 
 /* Listen for new goals in database then update UI */
@@ -267,6 +268,35 @@ const goalModalUI = document.getElementById("goal-modal");
 
 
 /* ---------- Functions ---------- */
+
+/* Use goal frequency to generate dates only */
+function generateDates(start, until, freq, denomination){
+  let startManipulate = start.clone();
+  let dates = [];
+  while ( startManipulate.isBefore(until) || startManipulate.isSame(until)) {
+     //console.log('start', start, '\nmanipulated start', startManipulate, '\nuntil', until);
+     // Generate dates from the goal's frequency
+     dates.push(startManipulate.toString());
+     startManipulate.add(freq, denomination);
+     //console.log('dates', dates);
+  };
+  return dates;
+};
+
+/* Use goal frequency to generate dates and add avenues to initiative object */
+function generateCommunicationObjs(type, subject, to_whom, from_whom, dates, goal_key, reminder_key) {
+  /* Take in list of dates and build communication objects */ 
+  let communications = [];
+  const sent = 'no'; // set progress to no 
+
+  for (let date in dates) {
+  let newCommunication = new Communication(type, subject, to_whom, from_whom, dates[date], sent, goal_key, reminder_key);
+  
+  communications.push(newCommunication);
+  };
+
+  return communications; // Return array of objects 
+};
 
 /* Function to Launch modal */
 function goalModalLaunch (event, goalId='', goalObj={}) {
@@ -318,7 +348,7 @@ function goalCloseModal (){
   // Close modal
   goalModalUI.style.display = "none";
   goalResetModal();
-}
+};
 
 /* Function to reset Modal after closing */
 function goalResetModal () {
@@ -389,8 +419,9 @@ function goalModalSave (){
   const reminder = document.getElementById("goal-reminder-modal");  
   const reminderDenomination = document.getElementById("goal-reminder-denomination-modal");    
 
-  // Grab reference to database document
+  // Grab reference to database documents
   const goalRef = dbRef.child('goals');
+  const commRef = dbRef.child('communications');
   console.log('goal id', goalId.value, '\ncomm id', commId.value, '\nreminder id', remId.value, 
               '\nname', name.value, '\ntype', type.value, '\nsubject', subject.value, '\nto whom', toWhom.value, 
               '\nfrom whom', fromWhom.value, '\nstart date', startDate.value, '\nuntil date', untilDate.value, 
@@ -398,46 +429,75 @@ function goalModalSave (){
               '\nreminder denomination', reminderDenomination.value);
   // Make sure name, subject, start date, and until date are filled out 
   if (name.value != '' && subject.value != '' && startDate.value != '' &&  untilDate.value != ''){
-    // Turn dates into moment object to save time stamp before being placed in database 
+    // Turn dates into moment object to save time stamp and for evaluation before being placed in database 
     let momStart = moment(startDate.value, 'YYYY-MM-DD', true); 
     let momUntil = moment(untilDate.value, 'YYYY-MM-DD', true);
-    // If no id provided assume this is a new communication
-    if (goalId.value == '' || goalId.value == undefined ){
-      // New Goal object 
-      // Make sure that id values are not undefined for storage in database 
-      if (commId.value == undefined) {
-        commId.value = '';
-      }
-      if (remId.value == undefined) {
-        remId.value = '';
-      }
-      const newGoal = new Goal(name.value, commId.value, remId.value, type.value, subject.value,
-                               toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
-                               freq.value, denomination.value, reminder.value, reminderDenomination.value); 
-      console.log("new goal", newGoal);
-      // Add goal to database 
-      goalRef.push(newGoal, function () {
-        console.log("data has been inserted");
-      });
-    } else {
-      // Update communication in database 
-      const updateGoal = new Goal(name.value, commId.value, remId.value, type.value, subject.value,
-                                  toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
-                                  freq.value, denomination.value, reminder.value, reminderDenomination.value); 
-      console.log("communication to update", updateGoal);
-      const goalDb = goalRef.child(goalId.value);
-      goalDb.update(updateGoal);
+    // Make sure that until date is not before start date
+    if ( momStart.isSameOrBefore(momUntil) ) {
+      // If no id provided assume this is a new goal
+      if (goalId.value == '' || goalId.value == undefined ){ 
+        // Make sure that id values are not undefined for initial storage in database 
+        if (remId.value == undefined) {
+          remId.value = '';
+        };
+        if (commId.value == undefined) {
+          commId.value = '';
+        };
 
-      // Update Schedule object on calendar 
-      /*calendar.updateSchedule(aveId.value, '1', {
-        title: description.value,
-        start: momDate.format('ddd DD MMM YYYY HH:mm:ss'),
-        end:  momDate.format('ddd DD MMM YYYY HH:mm:ss')
-      });*/
-    }; 
-    // Close modal
-    goalModalUI.style.display = "none";
-    goalResetModal();
+        /* Create goal object */
+        const newGoal = new Goal(name.value, commId.value, remId.value, type.value, subject.value,
+                                 toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
+                                 freq.value, denomination.value, reminder.value, reminderDenomination.value); 
+  
+        /* Add goal to database */
+        let goal = goalRef.push(newGoal, function () {
+          console.log("data has been inserted");
+        });
+        console.log("goal in database", goal);
+
+        /* Generate array of dates for communications */
+        const dates = generateDates(momStart, momUntil, freq.value, denomination.value);
+        console.log(dates);
+
+        /* Generate communications and then save to database */
+        let communications = generateCommunicationObjs(type.value, subject.value, toWhom.value, fromWhom.value, dates, goal.key, remId.value);
+        console.log('generated communications', communications);
+
+        let comRefs = [];
+        communications.forEach(function (comm) {
+          let communication = commRef.push(comm, function () { // Save to database
+            //console.log('communications saved');
+          });
+          comRefs.push(communication.key); // save keys from each communication 
+        });
+
+        /* update goal with new communication keys */
+        goal.update( {"comm_keys": comRefs} ); 
+    
+        /* TODO: generate reminders */
+
+      } else { // Update goal in database 
+        const updateGoal = new Goal(name.value, commId.value, remId.value, type.value, subject.value,
+                                    toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
+                                    freq.value, denomination.value, reminder.value, reminderDenomination.value); 
+        console.log("communication to update", updateGoal);
+        const goalDb = goalRef.child(goalId.value);
+        goalDb.update(updateGoal);
+
+        // Update Schedule object on calendar 
+        /*calendar.updateSchedule(aveId.value, '1', {
+          title: description.value,
+          start: momDate.format('ddd DD MMM YYYY HH:mm:ss'),
+          end:  momDate.format('ddd DD MMM YYYY HH:mm:ss')
+        });*/
+      }; 
+      // Close modal
+      goalModalUI.style.display = "none";
+      goalResetModal();
+    } else { // If dates are incorrect flag it on UI
+      startDate.style.backgroundColor = 'rgb(225, 160, 140)';
+      untilDate.style.backgroundColor = 'rgb(225, 160, 140)';
+    };
   } else { // Change backgroup of name, subject, start date, or until date if not filled out 
       if (name.value == ''){
         name.style.backgroundColor = 'rgb(225, 160, 140)';
