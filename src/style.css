@@ -123,6 +123,12 @@ textarea {
     border-color: var(--base-border-color);
 }
 
+#comm-in > div {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 2rem;
+  }
+
 #comm-in > div:hover {
   background-color: antiquewhite;
   cursor: pointer;
