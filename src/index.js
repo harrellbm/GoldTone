@@ -234,6 +234,11 @@ goalRef.on("child_added", snap => {
 });
 
 /* TODO: need to add on child updated listener to update ui on updates */
+/* Listen for updates and update UI */
+goalRef.on("child_changed", snap => {
+  let updatedVal = snap.val();
+  document.getElementById(snap.key).children[0].innerHTML = updatedVal.name;
+});
 
 /* Listen for deleted communications in database then update UI */
 goalRef.on("child_removed", snap => {
@@ -714,9 +719,12 @@ function generateComUi (key, subject) {
   const commIn = document.getElementById("comm-in");
 
   let commUi = document.createElement("div");
-  commUi.innerHTML = subject;
   commUi.setAttribute("id", key);
   commUi.addEventListener("click", comClicked);
+
+  let subj = document.createElement('span');
+  subj.innerHTML = subject;
+  commUi.append(subj);
 
   let arrow = document.createElement('span');
   arrow.innerHTML = '>';
@@ -735,7 +743,11 @@ comRef.on("child_added", snap => {
   generateComUi(snap.key, communication.subject)
 });
 
-/* TODO: need to add on child updated listener to update ui on updates */
+/* Listen for updates and update UI */
+comRef.on("child_changed", snap => {
+  let updatedVal = snap.val();
+  document.getElementById(snap.key).children[0].innerHTML = updatedVal.subject;
+});
 
 /* Listen for deleted communications in database then update UI */
 comRef.on("child_removed", snap => {
