@@ -163,12 +163,13 @@ const dbRef = firebase.database().ref();
 
 /* Get reference to Reminders document in database */
 const remRef = dbRef.child('reminders');
+const goalRef = dbRef.child('goals');
+const commRef = dbRef.child('communications');
 
 /* ---------- Common Database functions ---------- */
 
 function loadFromDatabase () {
   /* Get all children from goals document and place in UI */
-  const goalRef = dbRef.child('goals');
   goalRef.on("child_added", snap => {
     const goalIn = document.getElementById("goal-in");
     let goal = snap.val();
@@ -185,32 +186,22 @@ function loadFromDatabase () {
   /* Get all children from communications document and place in UI */
   const comRef = dbRef.child('communications');
   comRef.on("child_added", snap => {
-    const commIn = document.getElementById("comm-in");
     let communication = snap.val();
     //console.log("database snapshot of communications", communication);
 
-    let commUi = document.createElement("div");
-    commUi.innerHTML = communication.subject;
-    commUi.setAttribute("id", snap.key);
-    commUi.addEventListener("click", comClicked);
-
-    commIn.append(commUi);
+    generateComUi(snap.key, communication.subject)
   });
 };
 
 
 /* -------------- */ /* Goal Related Events and Functions */ /* -------------- */
 
-/* Get reference to goals document in database */
-const goalRef = dbRef.child('goals');
-
-
 /* ---------- Functions ---------- */
 
 /* When goal listed in UI is clicked get database reference and lauch modal */
 function goalClicked(e) {
   /* Get database reference */
-  var goalId = e.target.getAttribute("id");
+  var goalId = this.getAttribute("id");
   //console.log(goalId)
   const goalRef = dbRef.child('goals/' + goalId);
 
@@ -419,9 +410,6 @@ function goalModalSave (){
   const reminder = document.getElementById("goal-reminder-modal");  
   const reminderDenomination = document.getElementById("goal-reminder-denomination-modal");    
 
-  // Grab reference to database documents
-  const goalRef = dbRef.child('goals');
-  const commRef = dbRef.child('communications');
   console.log('goal id', goalId.value, '\ncomm id', commId.value, '\nreminder id', remId.value, 
               '\nname', name.value, '\ntype', type.value, '\nsubject', subject.value, '\nto whom', toWhom.value, 
               '\nfrom whom', fromWhom.value, '\nstart date', startDate.value, '\nuntil date', untilDate.value, 
@@ -478,11 +466,122 @@ function goalModalSave (){
 
       } else { // Update goal in database 
         const updateGoal = new Goal(name.value, commId.value, remId.value, type.value, subject.value,
-                                    toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
-                                    freq.value, denomination.value, reminder.value, reminderDenomination.value); 
-        console.log("communication to update", updateGoal);
+          toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
+          freq.value, denomination.value, reminder.value, reminderDenomination.value); 
+        console.log("goal to update", updateGoal);
         const goalDb = goalRef.child(goalId.value);
         goalDb.update(updateGoal);
+
+        /* Updated dates from goal frequency */
+        const newDates = generateDates(momStart, momUntil, freq.value, denomination.value);
+        console.log(newDates);
+        console.log(commId.value.length, newDates.length)
+
+        /* If there are more dates than communications add new ones */
+        if (commId.value.length < newDates.length) { 
+          let dif = newDates.length - commId.value.length; // Get the difference between number of current Avenues and new generated dates
+          //console.log('difference of comms and dates', dif);
+
+          /* Update linked communications */
+          let i = 0; // To access new dates in proper order from newDates array
+          for (let comm in commId.value) { // Update each Communication by id 
+            let date = newDates.shift();
+            let ref = commRef.child( commId.value[comm] );
+            ref.update({            
+              "com_type": type.value,
+              "subject": subject.value,
+              "to_whom": toWhom.value,
+              "from_whom": fromWhom.value,
+              "date": date, 
+              "reminder_keys": reminder.value
+            });
+    
+            // Update Schedule object on calendar 
+            /*calendar.updateSchedule(aveId, '2', {
+              title: guiGoal.children[3].value,
+              start: newDate.format('ddd DD MMM YYYY HH:mm:ss'),
+              end:  newDate.format('ddd DD MMM YYYY HH:mm:ss')
+            });*/
+            ++i;
+          };
+
+          /* Add additional Communications and then save to database */  
+          i = 0;
+          for (dif; dif >0; dif--) {
+            let comm = new Communication(type.value, subject.value, toWhom.value, fromWhom.value, newDates[i], goalId.value, remId.value);
+  
+            let ref = commRef.push(comm, function () { // Save to database
+              //console.log('communications saved');
+              });
+            commId.value.push(ref.key); // save keys from each communication 
+            ++i;
+          };
+
+          /* Update goal with new linked communications keys */
+          goalDb.update({
+            "comm_keys": commId.value
+          });
+          console.log("updated with less comms than needed");
+
+        } else if (commId.value.length > newDates.length) { // If there are more communications than new dates remove the extras 
+          // Remove extra Avenues 
+          let dif = commId.value.length - newDates.length; // Get the difference between number of current Avenues and new generated dates 
+          console.log('difference of comms and dates', dif);
+
+          console.log('before', commId.value);
+          // Remove extra linked communications from database 
+          for (dif; dif > 0; dif--) {
+            let id = commId.value.pop();
+            let ref = commRef.child( id );
+            ref.remove();
+          };
+          console.log('after', commId.value);
+
+          /* Update linked communications */
+          let i = 0; // To access new dates in proper order from newDates array
+          for (let comm in commId.value) { // Update each Communication by id 
+            let ref = commRef.child( commId.value[comm] );
+            ref.update({            
+              "com_type": type.value,
+              "subject": subject.value,
+              "to_whom": toWhom.value,
+              "from_whom": fromWhom.value,
+              "date": newDates[i], 
+              "reminder_keys": reminder.value
+            });
+
+            // Update Schedule object on calendar 
+            /*calendar.updateSchedule(aveId, '2', {
+              title: guiGoal.children[3].value,
+              start: newDate.format('ddd DD MMM YYYY HH:mm:ss'),
+              end:  newDate.format('ddd DD MMM YYYY HH:mm:ss')
+            });*/
+            ++i;
+          };
+
+          /* Update goal with new linked communications keys */
+          goalDb.update({
+            "comm_keys": commId.value
+          });
+          console.log("updated with more comms than needed");
+
+        } else { // Else if they are equal just update all avenues with new input from ui 
+          /* Update linked communications */
+          let i = 0; // To access new dates in proper order from newDates array
+          for (let comm in commId.value) { // Update each Communication by id 
+            let ref = commRef.child( commId.value[comm] );
+            ref.update({            
+              "com_type": type.value,
+              "subject": subject.value,
+              "to_whom": toWhom.value,
+              "from_whom": fromWhom.value,
+              "date": newDates[i], 
+              "reminder_keys": reminder.value
+            });
+            ++i;
+          };
+          console.log("updated with same number of comms")
+        }; 
 
         // Update Schedule object on calendar 
         /*calendar.updateSchedule(aveId.value, '1', {
@@ -592,10 +691,11 @@ const comRef = dbRef.child('communications');
 
 /* ---------- Functions ---------- */
 
+
 /* When communication listed in UI is clicked get database reference and lauch modal */
 function comClicked(e) {
   /* Get database reference */
-  var comId = e.target.getAttribute("id");
+  var comId = this.getAttribute("id");
   console.log(comId)
   const comRef = dbRef.child('communications/' + comId);
 
@@ -609,22 +709,30 @@ function comClicked(e) {
   commModalLaunch("list_launch", comId, comObj);
 };
 
+/*  Generate the ui object for a communication */
+function generateComUi (key, subject) {
+  const commIn = document.getElementById("comm-in");
+
+  let commUi = document.createElement("div");
+  commUi.innerHTML = subject;
+  commUi.setAttribute("id", key);
+  commUi.addEventListener("click", comClicked);
+
+  let arrow = document.createElement('span');
+  arrow.innerHTML = '>';
+  commUi.append(arrow);
+
+  commIn.append(commUi); 
+};
+
 
 /* ---------- Event Listeners ---------- */
 
 /* Listen for new communications in database then update UI */
 comRef.on("child_added", snap => {
-  const commIn = document.getElementById("comm-in");
   let communication = snap.val();
   //console.log("database snapshot of communications", communication);
-
-  let commUi = document.createElement("div");
-  commUi.innerHTML = communication.subject;
-  commUi.setAttribute("id", snap.key);
-  commUi.addEventListener("click", comClicked);
-
-  commIn.append(commUi); 
-  
+  generateComUi(snap.key, communication.subject)
 });
 
 /* TODO: need to add on child updated listener to update ui on updates */
@@ -859,7 +967,6 @@ document.getElementById('comm-delete-modal').addEventListener("click", commModal
 document.getElementById("add-comm-btn").addEventListener("click", commModalLaunch);
 
 
-
 /* ------------ */ /* Reminder Related Events and Functions */ /* ----------- */
 
 /* Access reminders document */
@@ -872,13 +979,6 @@ remRef.on("child_added", snap => {
 	$li.innerHTML = reminder.time_before;
 	$li.setAttribute("id", snap.key);
 	$li.addEventListener("click", remClicked);
-  // edit icon 
-  let editIconUI = document.createElement("span");
-  editIconUI.class = "edit-user";
-  editIconUI.innerHTML = " ✎";
-  editIconUI.setAttribute("userid", snap.key);
-  editIconUI.addEventListener("click", editButtonClicked) // Append after li.innerHTML = value.name 
-  $li.append(editIconUI);
   // delete icon 
   let deleteIconUI = document.createElement("span");
   deleteIconUI.class = "delete-user";
@@ -929,22 +1029,6 @@ function addCommBtnClicked() {
     comRef.push(newUser, function () {
         console.log("data has been inserted");
     })
-};
-
-function editButtonClicked (e) {
-    // show the Edit User Form 
-    document.getElementById('edit-user-module').style.display = "block";
-    //set user id to the hidden input field 
-    document.querySelector(".edit-userid").value = e.target.getAttribute("userid");
-    const userRef = dbRef.child('users/' + e.target.getAttribute("userid"));
-    // set data to the user field 
-    const editUserInputsUI = document.querySelectorAll(".edit-user-input");
-    userRef.on("value", snap => {
-        for (var i = 0, len = editUserInputsUI.length; i < len; i++) {
-            var key = editUserInputsUI[i].getAttribute("data-key");
-            editUserInputsUI[i].value = snap.val()[key];
-        }
-    });
 };
 
 
