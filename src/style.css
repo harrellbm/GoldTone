@@ -91,29 +91,12 @@ textarea {
 #userList li:hover {
     background: #4fc3fc;
 }
-#goal-toolbar {
-    display:flex;
-    justify-content: space-between;
-    align-items: flex-end;
-}
-
 
 #goal-in {
     min-height: 200px;
     border-width: var(--base-border-width);
     border-style: var(--base-border-style);
     border-color: var(--base-border-color);
-}
-
-#goal-in > div:hover {
-    background-color: antiquewhite;
-    cursor: pointer;
-  }  
-
-#comm-toolbar {
-    display:flex;
-    justify-content: space-between;
-    align-items: flex-end;
 }
 
 #comm-in {
@@ -123,18 +106,28 @@ textarea {
     border-color: var(--base-border-color);
 }
 
+/* Common goal and communication rules */
+#goal-toolbar,
+#comm-toolbar {
+    display:flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+#goal-in > div,
 #comm-in > div {
     display: flex;
     justify-content: space-between;
     padding: 0 2rem;
-  }
+}
 
+#goal-in > div:hover, 
 #comm-in > div:hover {
   background-color: antiquewhite;
   cursor: pointer;
 }
 
-/* Add button styling */
+/* Common add button styling */
 #add-comm-btn,
 #add-goal-btn {
     fill: rgb(255, 255, 255);
