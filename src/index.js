@@ -244,7 +244,7 @@ goalRef.on("child_added", snap => {
   //console.log("database snapshot of goals", goal);
 
   generateGoalUi(snap.key, goal.name);
-  
+
 });
 
 /* Listen for updates and update UI */
@@ -648,16 +648,20 @@ function goalModalDelete (){
     if (value.isConfirmed == false) { // Escape deletion 
       return
     } else { // Proceed with deletion 
-      // Get id from DOM
-      const goalId = document.getElementById("goal-id");
-      // Remove linked communications from database
-      /*let messAve = document.getElementById(`avenue${aveId.value}`);
-      messAve.parentElement.removeChild(messAve);*/
 
-      // Delete Schedule object on calendar 
-      /*calendar.deleteSchedule(aveId.value, '1');*/
-      const comIds = document.getElementById('linked-comm-id').value;
+      /* Get id from DOM */
+      const goalId = document.getElementById( "goal-id" );
+
+      /* Remove linked communications from database */
+      const comIds = document.getElementById( 'linked-comm-id' ).value;
       console.log(comIds);
+      comIds.forEach(function (id){
+        const goalRef = dbRef.child( 'communications/' + id );
+        goalRef.remove();
+      })
+
+      /* Delete Schedule object on calendar */
+      /*calendar.deleteSchedule(aveId.value, '1');*/
 
       // Remove goal from database 
       const goalRef = dbRef.child('goals/' + goalId.value);
