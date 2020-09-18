@@ -198,6 +198,25 @@ function loadFromDatabase () {
 
 /* ---------- Functions ---------- */
 
+/*  Generate the ui object for a goal */
+function generateGoalUi (key, subject) {
+  const goalIn = document.getElementById("goal-in");
+
+  let goalUi = document.createElement("div");
+  goalUi.setAttribute("id", key);
+  goalUi.addEventListener("click", goalClicked);
+
+  let name = document.createElement('span');
+  name.innerHTML = subject;
+  goalUi.append(name);
+
+  let arrow = document.createElement('span');
+  arrow.innerHTML = '>';
+  goalUi.append(arrow);
+
+  goalIn.append(goalUi); 
+};
+
 /* When goal listed in UI is clicked get database reference and lauch modal */
 function goalClicked(e) {
   /* Get database reference */
@@ -224,16 +243,10 @@ goalRef.on("child_added", snap => {
   let goal = snap.val();
   //console.log("database snapshot of goals", goal);
 
-  let goalUi = document.createElement("div");
-  goalUi.innerHTML = goal.name;
-  goalUi.setAttribute("id", snap.key);
-  goalUi.addEventListener("click", goalClicked);
-
-  goalIn.append(goalUi); 
+  generateGoalUi(snap.key, goal.name);
   
 });
 
-/* TODO: need to add on child updated listener to update ui on updates */
 /* Listen for updates and update UI */
 goalRef.on("child_changed", snap => {
   let updatedVal = snap.val();
@@ -441,7 +454,7 @@ function goalModalSave (){
         const newGoal = new Goal(name.value, commId.value, remId.value, type.value, subject.value,
                                  toWhom.value, fromWhom.value, momStart.toString(), momUntil.toString(),// Convert date to String to preserve timezone
                                  freq.value, denomination.value, reminder.value, reminderDenomination.value); 
-  
+        console.log('new goal obj', newGoal)
         /* Add goal to database */
         let goal = goalRef.push(newGoal, function () {
           console.log("data has been inserted");
@@ -637,14 +650,16 @@ function goalModalDelete (){
     } else { // Proceed with deletion 
       // Get id from DOM
       const goalId = document.getElementById("goal-id");
-      // Remove communication from UI
+      // Remove linked communications from database
       /*let messAve = document.getElementById(`avenue${aveId.value}`);
       messAve.parentElement.removeChild(messAve);*/
 
       // Delete Schedule object on calendar 
       /*calendar.deleteSchedule(aveId.value, '1');*/
-      
-      // Remove communication from database 
+      const comIds = document.getElementById('linked-comm-id').value;
+      console.log(comIds);
+
+      // Remove goal from database 
       const goalRef = dbRef.child('goals/' + goalId.value);
       goalRef.remove();
       
