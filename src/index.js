@@ -175,12 +175,8 @@ function loadFromDatabase () {
     let goal = snap.val();
     //console.log("database snapshot of goals", goal);
 
-    let goalUi = document.createElement("div");
-    goalUi.innerHTML = goal.name;
-    goalUi.setAttribute("id", snap.key);
-    goalUi.addEventListener("click", goalClicked);
+    generateGoalUi(snap.key, goal.name);
 
-    goalIn.append(goalUi);
   });
 
   /* Get all children from communications document and place in UI */
@@ -189,7 +185,8 @@ function loadFromDatabase () {
     let communication = snap.val();
     //console.log("database snapshot of communications", communication);
 
-    generateComUi(snap.key, communication.subject)
+    generateComUi(snap.key, communication.subject);
+
   });
 };
 
@@ -217,7 +214,7 @@ function generateGoalUi (key, subject) {
   goalIn.append(goalUi); 
 };
 
-/* When goal listed in UI is clicked get database reference and lauch modal */
+/* When goal listed in UI is clicked get database reference and launch modal */
 function goalClicked(e) {
   /* Get database reference */
   var goalId = this.getAttribute("id");
@@ -820,11 +817,23 @@ function commModalLaunch (event, comId='', comObj={}) {
     let momDate = moment(comObj["date"], 'ddd MMM DD YYYY HH:mm:ss'); // Adjust to current timezone from saved timezone
     date.value = momDate.format('YYYY-MM-DD'); // format for display in date chooser
     sent.value = comObj["sent"];
-  } else if (comId == '') {
+
+    /* Hide delete button because we are launching a communication linked to a goal */
+    if ( comObj['goal_key'] != '' ) {
+
+      document.getElementById('comm-delete-modal').style.display = "none";
+      document.getElementById('comm-delete-modal').style.position = "absolute";
+  
+    };
+
+  } else if ( comId == '' || comId == undefined ) {
+
     /* Hide delete button because we are launching to add a new communication */
     document.getElementById('comm-delete-modal').style.display = "none";
     document.getElementById('comm-delete-modal').style.position = "absolute";
-  }   
+
+  ;} 
+
   // Display modal
   commModalUI.style.display = "block";
 };
