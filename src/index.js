@@ -345,6 +345,9 @@ function goalModalLaunch (event, goalId='', goalObj={}) {
     document.getElementById('goal-delete-modal').style.display = "none";
     document.getElementById('goal-delete-modal').style.position = "absolute";
   }   
+  
+  // Prevent body from scrolling
+  document.querySelector("body").style.overflow = 'hidden';
   // Display modal
   goalModalUI.style.display = "block";
 };
@@ -358,6 +361,9 @@ function goalCloseModal (){
 
 /* Function to reset Modal after closing */
 function goalResetModal () {
+  // Allow body scrolling again
+  document.querySelector("body").style.overflow = 'visible';
+
   // Refresh calendar 
   //calendar.render();
 
@@ -834,6 +840,8 @@ function commModalLaunch (event, comId='', comObj={}) {
 
   ;} 
 
+  // Prevent body from scrolling
+  document.querySelector("body").style.overflow = 'hidden';
   // Display modal
   commModalUI.style.display = "block";
 };
@@ -847,6 +855,8 @@ function comCloseModal (){
 
 /* Function to reset Modal after closing */
 function comResetModal () {
+  // Allow body scrolling again
+  document.querySelector("body").style.overflow = 'visible';
   // Refresh calendar 
   //calendar.render();
 
