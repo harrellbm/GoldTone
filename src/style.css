@@ -210,11 +210,25 @@ textarea {
   .modal-bts {
       margin: 0.5rem;
   }
-  /* Extra rules for aves that are linked to goals */
-  /*#comm-date-modal:read-only {
+  /* Extra rules for displaying comms that are linked to goals */
+  #comm-type-modal:disabled{
+    cursor: not-allowed;
+    color: black;
+    border-color: var(--base-border-color);
+    background-color: var(--workspace-bg-color);
+    opacity: 1;
+  }
+
+  #comm-subject-modal:read-only,
+  #comm-to-whom-modal:read-only,
+  #comm-from-whom-modal:read-only,
+  #comm-date-modal:read-only {
     cursor: not-allowed;
   }
 
+  #comm-subject-modal:read-only,
+  #comm-to-whom-modal:read-only,
+  #comm-from-whom-modal:read-only,
   #comm-date-modal:read-only:focus {
     outline: none;
-  }*/
+  }

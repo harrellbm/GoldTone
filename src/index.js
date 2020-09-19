@@ -345,7 +345,7 @@ function goalModalLaunch (event, goalId='', goalObj={}) {
     document.getElementById('goal-delete-modal').style.display = "none";
     document.getElementById('goal-delete-modal').style.position = "absolute";
   }   
-  
+
   // Prevent body from scrolling
   document.querySelector("body").style.overflow = 'hidden';
   // Display modal
@@ -824,11 +824,18 @@ function commModalLaunch (event, comId='', comObj={}) {
     date.value = momDate.format('YYYY-MM-DD'); // format for display in date chooser
     sent.value = comObj["sent"];
 
-    /* Hide delete button because we are launching a communication linked to a goal */
+    /* Disable editing main values and hide delete button because we are launching a communication linked to a goal */
     if ( comObj['goal_key'] != '' ) {
 
       document.getElementById('comm-delete-modal').style.display = "none";
       document.getElementById('comm-delete-modal').style.position = "absolute";
+      
+      /* Disable fields that are set by Goal */
+      type.disabled = true;
+      subject.readOnly = true;
+      toWhom.readOnly = true;
+      fromWhom.readOnly = true;
+      date.readOnly = true;
   
     };
 
@@ -880,17 +887,23 @@ function comResetModal () {
   toWhom.value = '';
   fromWhom.value = '';
   date.value = '';
-  sent.options.selectedIndex = 0;       
-  // Reset backgroup of date and description incase they had been changed on unfilled attempt to save
+  sent.options.selectedIndex = 0; 
+        
+  /* Reset backgroup of date and description incase they had been changed on unfilled attempt to save */
   date.style.backgroundColor = 'rgb(245, 245,230)';
   subject.style.backgroundColor = 'rgb(245, 245,230)';
-  // Resent delete button if hidden when launching modal from add button
+
+  /* Resent delete button if hidden when launching modal from add button */
   document.getElementById('comm-delete-modal').style.display = "block";
   document.getElementById('comm-delete-modal').style.position = "initial";
-  // Reset modal if it was opened from an communication connected with a goal 
-  /*type.disabled = false;
-  description.readOnly = false;
-  date.readOnly = false;*/
+
+  /* Reset modal if it was opened from an communication connected with a goal */
+  type.disabled = false;
+  subject.readOnly = false;
+  toWhom.readOnly = false;
+  fromWhom.readOnly = false;
+  date.readOnly = false;
+
 };
 
 /* Function to save communication from modal. Then update database. */
