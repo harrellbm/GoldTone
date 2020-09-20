@@ -185,7 +185,7 @@ function loadFromDatabase () {
     let communication = snap.val();
     //console.log("database snapshot of communications", communication);
 
-    generateComUi(snap.key, communication.subject);
+    generateComUi(snap.key, communication.subject, communication.sent);
 
   });
 };
@@ -720,7 +720,7 @@ const comRef = dbRef.child('communications');
 
 
 /* When communication listed in UI is clicked get database reference and lauch modal */
-function comClicked(e) {
+function comClicked() {
   /* Get database reference */
   var comId = this.getAttribute("id");
   console.log(comId)
@@ -737,12 +737,35 @@ function comClicked(e) {
 };
 
 /*  Generate the ui object for a communication */
-function generateComUi (key, subject) {
+function generateComUi (key, subject, sentStat) {
   const commIn = document.getElementById("comm-in");
 
   let commUi = document.createElement("div");
   commUi.setAttribute("id", key);
   commUi.addEventListener("click", comClicked);
+
+  /* Create select for sent status */
+  let sent = document.createElement('select');
+  sent.addEventListener("click", function(e){
+    e.stopPropagation()
+  })
+  let option1 = document.createElement('option');
+  option1.text = "no";
+  sent.add(option1);
+  let option2 = document.createElement('option');
+  option2.text = "in progress";
+  sent.add(option2);  
+  let option3 = document.createElement('option');
+  option3.text = "yes";
+  sent.add(option3);
+  /* Set sent option from passed in value */
+  for (var i = 0; i < sent.options.length; i++) {
+    if (sent.options[i].text === sentStat) {
+        sent.selectedIndex = i;
+        break;
+    };
+  };  
+  commUi.append(sent);
 
   let subj = document.createElement('span');
   subj.innerHTML = subject;
@@ -762,7 +785,7 @@ function generateComUi (key, subject) {
 comRef.on("child_added", snap => {
   let communication = snap.val();
   //console.log("database snapshot of communications", communication);
-  generateComUi(snap.key, communication.subject)
+  generateComUi(snap.key, communication.subject, communication.sent)
 });
 
 /* Listen for updates and update UI */
@@ -888,7 +911,7 @@ function comResetModal () {
   fromWhom.value = '';
   date.value = '';
   sent.options.selectedIndex = 0; 
-        
+
   /* Reset backgroup of date and description incase they had been changed on unfilled attempt to save */
   date.style.backgroundColor = 'rgb(245, 245,230)';
   subject.style.backgroundColor = 'rgb(245, 245,230)';
