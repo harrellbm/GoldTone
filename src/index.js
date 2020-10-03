@@ -747,13 +747,8 @@ function generateComUi (key, subject, sentStat) {
   /* Create select for sent status */
   let sent = document.createElement('select');
   sent.setAttribute("class", "comm-sent");
-  sent.addEventListener("click", function(e) {
-    e.stopPropagation(); // make sure event does not bubble up to parent element and trigger modal launch
-  });
-  sent.addEventListener('change', function(e) { // Listen for sent status change on list view
-    console.log('select value changed', e.target.value);
-    // update com object
-  });
+
+  /* Select options */
   let option1 = document.createElement('option');
   option1.text = "no";
   sent.add(option1);
@@ -763,6 +758,7 @@ function generateComUi (key, subject, sentStat) {
   let option3 = document.createElement('option');
   option3.text = "yes";
   sent.add(option3);
+
   /* Set sent option from passed in value */
   for (var i = 0; i < sent.options.length; i++) {
     if (sent.options[i].text === sentStat) {
@@ -770,7 +766,23 @@ function generateComUi (key, subject, sentStat) {
         break;
     };
   };  
-  commUi.append(sent);
+
+  /* Make sure event does not bubble up to parent element and trigger modal launch */
+  sent.addEventListener("click", function(e) {
+    e.stopPropagation(); 
+  });
+
+  /* Listen for sent status change on list view */
+  sent.addEventListener('change', function(e) { 
+    console.log('select value changed', e.target.parentNode.id);
+
+    /* update sent option from passed in value */
+    dbRef.child('communications/' + e.target.parentNode.id).update( {"sent": e.target.value} ); 
+ 
+  });
+
+  /* Append sent select to main Div */
+  commUi.append(sent); 
 
   let subj = document.createElement('span');
   subj.innerHTML = subject;
@@ -798,27 +810,31 @@ function updateComUi (key, subject, sentStat) {
   /* Update displayed subject */ 
   commUI.children[1].innerHTML = subject; 
 
-}
+};
 
 /* ---------- Event Listeners ---------- */
 
 /* Listen for new communications in database then update UI */
 comRef.on("child_added", snap => {
   let communication = snap.val();
+
   //console.log("database snapshot of communications", communication);
   generateComUi(snap.key, communication.subject, communication.sent)
+
 });
 
 /* Listen for updates and update UI */
 comRef.on("child_changed", snap => {
   let updatedVal = snap.val();
   updateComUi(snap.key, updatedVal.subject, updatedVal.sent);
+
 });
 
 /* Listen for deleted communications in database then update UI */
 comRef.on("child_removed", snap => {
   const removedComUI = document.getElementById(snap.key);
   removedComUI.remove(removedComUI);
+
 });
 
 
