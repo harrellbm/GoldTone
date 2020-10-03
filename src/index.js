@@ -746,9 +746,14 @@ function generateComUi (key, subject, sentStat) {
 
   /* Create select for sent status */
   let sent = document.createElement('select');
-  sent.addEventListener("click", function(e){
-    e.stopPropagation()
-  })
+  sent.setAttribute("class", "comm-sent");
+  sent.addEventListener("click", function(e) {
+    e.stopPropagation(); // make sure event does not bubble up to parent element and trigger modal launch
+  });
+  sent.addEventListener('change', function(e) { // Listen for sent status change on list view
+    console.log('select value changed', e.target.value);
+    // update com object
+  });
   let option1 = document.createElement('option');
   option1.text = "no";
   sent.add(option1);
@@ -778,6 +783,22 @@ function generateComUi (key, subject, sentStat) {
   commIn.append(commUi); 
 };
 
+/* Update the ui object */
+function updateComUi (key, subject, sentStat) {
+  let commUI = document.getElementById(key);
+
+  /* Update sent option from passed in value */
+  for (var i = 0; i < commUI.children[0].options.length; i++) {
+    if (commUI.children[0].options[i].text === sentStat) {
+      commUI.children[0].selectedIndex = i;
+      break;
+    };
+  };  
+
+  /* Update displayed subject */ 
+  commUI.children[1].innerHTML = subject; 
+
+}
 
 /* ---------- Event Listeners ---------- */
 
@@ -791,7 +812,7 @@ comRef.on("child_added", snap => {
 /* Listen for updates and update UI */
 comRef.on("child_changed", snap => {
   let updatedVal = snap.val();
-  document.getElementById(snap.key).children[0].innerHTML = updatedVal.subject;
+  updateComUi(snap.key, updatedVal.subject, updatedVal.sent);
 });
 
 /* Listen for deleted communications in database then update UI */
