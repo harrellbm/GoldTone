@@ -400,10 +400,10 @@ function goalResetModal () {
   reminderDenomination.options.selectedIndex = 0;
      
   // Reset backgroup of name, subject, start date, and until date incase they had been changed on unfilled attempt to save
-  name.style.backgroundColor = 'rgb(245, 245,230)';
-  subject.style.backgroundColor = 'rgb(245, 245,230)';
-  startDate.style.backgroundColor = 'rgb(245, 245,230)';
-  untilDate.style.backgroundColor = 'rgb(245, 245,230)';
+  name.style.backgroundColor = 'var(--workspace-bg-color)';
+  subject.style.backgroundColor = 'var(--workspace-bg-color)';
+  startDate.style.backgroundColor = 'var(--workspace-bg-color)';
+  untilDate.style.backgroundColor = 'var(--workspace-bg-color)';
 
   // Resent delete button if hidden when launching modal from add button
   document.getElementById('goal-delete-modal').style.display = "block";
@@ -642,7 +642,7 @@ function goalModalDelete (){
     text: 'You won\'t be able to undo this!?', 
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#8bcbe0',
+    confirmButtonColor: '#60adc2',
     confirmButtonText: 'Yes, delete it!',
     cancelButtonText: 'No, Cancel!',
     cancelButtonColor: '#d33'
@@ -962,8 +962,8 @@ function comResetModal () {
   sent.options.selectedIndex = 0; 
 
   /* Reset backgroup of date and description incase they had been changed on unfilled attempt to save */
-  date.style.backgroundColor = 'rgb(245, 245,230)';
-  subject.style.backgroundColor = 'rgb(245, 245,230)';
+  date.style.backgroundColor = 'var(--workspace-bg-color)';
+  subject.style.backgroundColor = 'var(--workspace-bg-color)';
 
   /* Resent delete button if hidden when launching modal from add button */
   document.getElementById('comm-delete-modal').style.display = "block";
@@ -1040,7 +1040,7 @@ function commModalDelete (){
     text: 'You won\'t be able to undo this!?', 
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#8bcbe0',
+    confirmButtonColor: '#60adc2',
     confirmButtonText: 'Yes, delete it!',
     cancelButtonText: 'No, Cancel!',
     cancelButtonColor: '#d33'

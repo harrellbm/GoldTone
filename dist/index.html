@@ -26,49 +26,53 @@
         </div>
         <div id="app-content" style="display: none;">
             <div id="sign-out-container">
+                <h1>GoldTone</h1>
                 <input id="sign-out" type="button" value="Sign Out"></input>
             </div>
             <div id="tabs">
-                <span> | This is where | </span>
-                <span> | Tabs will go | </span>
-                <span> | Fake tab | </span>
+                <input type="button" value="This is where">
+                <input type="button" value="Tabs will go">
+                <input type="button" value="Fake tab">
             </div>
             <!-- Goal section -->
             <section id="goal-sec">
-                <p>Goals</p>
-                <div id="goal-toolbar">
-                    <div style="width: 25px; height: 25px;">
-                        <svg  id="add-goal-btn" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <label for="goal-sort">Sort</label>
-                        <select id="goal-sort">
-                            <option>By Recent Date</option>
-                            <option>By Oldest Date</option>
-                        </select>
+                <div id="goal-header">
+                    <p>Goals</p>
+                    <div id="goal-toolbar">
+                        <div style="width: 25px; height: 25px;">
+                            <svg  id="add-goal-btn" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <label for="goal-sort">Sort</label>
+                            <select id="goal-sort">
+                                <option>By Recent Date</option>
+                                <option>By Oldest Date</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <div id="goal-in"></div>
             </section>
             <!-- Communications section -->
             <section id="comm-sec">
-                <p>Dispatch</p>
-                <div id="comm-toolbar">
-                    <div style="width: 25px; height: 25px;">
-                        <svg  id="add-comm-btn" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"/>
-                        </svg>
+                <div id="comm-header">
+                    <p>Dispatchs</p>
+                    <div id="comm-toolbar">
+                        <div style="width: 25px; height: 25px;">
+                            <svg  id="add-comm-btn" width="100%" height="100%" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M10 3C10.5523 3 11 3.44772 11 4V9H16C16.5523 9 17 9.44772 17 10C17 10.5523 16.5523 11 16 11H11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11H4C3.44772 11 3 10.5523 3 10C3 9.44771 3.44772 9 4 9L9 9V4C9 3.44772 9.44772 3 10 3Z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <label for="comm-sort">Sort</label>
+                            <select id="comm-sort">
+                                <option>By Recent Date</option>
+                                <option>By Oldest Date</option>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <label for="comm-sort">Sort</label>
-                        <select id="comm-sort">
-                            <option>By Recent Date</option>
-                            <option>By Oldest Date</option>
-                        </select>
-                    </div>
-                    
                 </div>
                 <div id="comm-in"></div>
                 <div id="rem-in"></div>
