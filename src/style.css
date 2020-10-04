@@ -7,6 +7,7 @@
     --base-hover-color: rgb(139, 203, 224);
     --base-border-style: solid;
     --base-border-width: 1px;
+    --base-wide-border-width: 2px;
     --base-border-color: rgb(118, 118, 118);
     --base-font-family: Helvetica, Arial, sans-serif;
   
@@ -29,28 +30,6 @@ body {
     font-family: var(--base-font-family), sans-serif;
 }
 
-#sign-in-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 10%;
-}
-
-#sign-out-container {
-    display: flex;
-    justify-content: flex-end;
-}
-
-#sign-out {
-    margin-bottom: 0.5rem;
-}
-
-#app-content {
-    margin: 5%;
-    text-align: center;
-    flex-direction: column;
-}
-  
 p {
     color: var(--base-text-color);
     text-align: center;
@@ -67,7 +46,34 @@ textarea {
     background-color: var(--workspace-bg-color);
 }
 
-/*---------------------------*/ /* Read Users */ /*---------------------------*/
+/*---------------------------*/ /* Containers */ /*---------------------------*/
+#sign-in-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10%;
+}
+
+#sign-out-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#tabs,
+#sign-out {
+    margin-bottom: 0.5rem;
+}
+
+#tabs > input {
+    width: 32%;
+}
+#app-content {
+    margin: 5%;
+    text-align: center;
+    flex-direction: column;
+}
+
+/*-------------------------*/ /* Manager Screen */ /*-------------------------*/
 #userList {
     margin: 0;
     padding: 0;
@@ -92,18 +98,16 @@ textarea {
     background: #4fc3fc;
 }
 
-#goal-in {
-    min-height: 200px;
-    border-width: var(--base-border-width);
+/* Make headers sticky */
+#goal-header,
+#comm-header {
+    position: -webkit-sticky;
+    position: sticky;
+    top: -2px;
+    border-width: var(--base-wide-border-width) 0 var(--base-wide-border-width) 0;
     border-style: var(--base-border-style);
     border-color: var(--base-border-color);
-}
-
-#comm-in {
-    min-height: 200px;
-    border-width: var(--base-border-width);
-    border-style: var(--base-border-style);
-    border-color: var(--base-border-color);
+    background: var(--base-bg-color);
 }
 
 /* Common goal and communication rules */
@@ -112,19 +116,31 @@ textarea {
     display:flex;
     justify-content: space-between;
     align-items: flex-end;
+    padding-bottom: 3px;
 }
 
-#goal-in > div,
-#comm-in > div {
+#goal-in > div{
     display: flex;
     justify-content: space-between;
-    padding: 0 2rem;
+    padding: 0 0.5rem;
+}
+
+#comm-in > div {
+    display: grid;
+    padding: 0 0.5rem;
+    grid-template-columns: 1fr 2.5fr 2.5fr 0.5fr;
+    grid-template-rows: 100%;
 }
 
 #goal-in > div:hover, 
 #comm-in > div:hover {
   background-color: antiquewhite;
   cursor: pointer;
+}
+
+/* individual spans inside divs */
+#comm-in > div > span {
+    align-self: center;
 }
 
 /* Common add button styling */
@@ -168,12 +184,28 @@ textarea {
   .goal-modal-content,
   .comm-modal-content {
     background-color: var(--workspace-bg-color);
-    margin: 15% auto; /* 15% from the top and centered */
-    padding: 15px;
+    margin: 5% auto; /* 15% from the top and centered */
+    padding: 20px 15px;
     border: 1px solid rgb(118, 118, 118);
+    height: auto;
     width: 90%; /* Could be more or less, depending on screen size */
     border-radius: 5px; /* Round corners */
+  
   }
+
+  .comm-modal-content {
+    display: grid;
+    grid-template-rows: 1fr 1fr 2fr 2fr 2fr 1fr 1fr 1fr;
+    align-items: center;
+  }
+
+  .comm-modal-content > div {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      align-items: center;
+      
+  }
+
 
   /* Close button styling */
 .close {

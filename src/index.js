@@ -737,7 +737,7 @@ function comClicked() {
 };
 
 /*  Generate the ui object for a communication */
-function generateComUi (key, subject, sentStat) {
+function generateComUi (key, subject, sentStat, date) {
   const commIn = document.getElementById("comm-in");
 
   let commUi = document.createElement("div");
@@ -784,10 +784,18 @@ function generateComUi (key, subject, sentStat) {
   /* Append sent select to main Div */
   commUi.append(sent); 
 
+  /* Communication Subject */
   let subj = document.createElement('span');
   subj.innerHTML = subject;
   commUi.append(subj);
 
+  /* Date Subject */
+  let dat = document.createElement('span');
+  let momDate = moment(date, 'ddd MMM DD YYYY HH:mm:ss');
+  dat.innerHTML = momDate.format("ddd, MMM DD, YYYY"); 
+  commUi.append(dat);
+
+  /* Arrow for style */
   let arrow = document.createElement('span');
   arrow.innerHTML = '>';
   commUi.append(arrow);
@@ -796,7 +804,7 @@ function generateComUi (key, subject, sentStat) {
 };
 
 /* Update the ui object */
-function updateComUi (key, subject, sentStat) {
+function updateComUi (key, subject, sentStat, date) {
   let commUI = document.getElementById(key);
 
   /* Update sent option from passed in value */
@@ -810,6 +818,10 @@ function updateComUi (key, subject, sentStat) {
   /* Update displayed subject */ 
   commUI.children[1].innerHTML = subject; 
 
+  /* Update displayed date */ 
+  let momDate = moment(date, 'ddd MMM DD YYYY HH:mm:ss');
+  commUI.children[2].innerHTML = momDate.format("ddd, MMM DD, YYYY"); 
+
 };
 
 /* ---------- Event Listeners ---------- */
@@ -819,14 +831,14 @@ comRef.on("child_added", snap => {
   let communication = snap.val();
 
   //console.log("database snapshot of communications", communication);
-  generateComUi(snap.key, communication.subject, communication.sent)
+  generateComUi(snap.key, communication.subject, communication.sent, communication.date)
 
 });
 
 /* Listen for updates and update UI */
 comRef.on("child_changed", snap => {
   let updatedVal = snap.val();
-  updateComUi(snap.key, updatedVal.subject, updatedVal.sent);
+  updateComUi(snap.key, updatedVal.subject, updatedVal.sent, updatedVal.date);
 
 });
 
