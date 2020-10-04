@@ -1,11 +1,11 @@
 
 /*------------------------*/ /* Global CSS Variables */ /*--------------------*/
 :root {
-    --base-bg-color:  rgb(118, 118, 118); /* rgb(139, 203, 224);*/
+    --base-bg-color:  rgb(112, 118, 118); /* rgb(139, 203, 224);*/
     --secondary-bg-color: rgb(66, 66, 66); /* rgb(96, 173, 198);*/
     --green-accent: rgb(141, 233, 172);
     --purple-accent: rgb(150, 164, 229); /* 110–127–207*/
-    --gold-accent: rgb(184, 134, 40); 
+    --gold-accent: rgb(255, 170, 0); 
     --base-text-color: white; /* white; */
     --base-text-shadow: 2px 2px rgb( 0, 0, 0, 0.26);
     --base-hover-color: rgb(50, 50, 50); 
@@ -37,7 +37,7 @@ body {
     font-family: var(--base-font-family), sans-serif;
 }
 
-p {
+#app-content p {
     color: var(--base-text-color);
     text-align: center;
     background-color: var(--base-bg-color);
@@ -46,15 +46,15 @@ p {
     text-shadow: var(--base-text-shadow);
 }
 
-label,
-span {
+#app-content label,
+#app-content span {
     color: var(--base-text-color);
     text-shadow: var(--base-text-shadow);
 }
 
-select,
-input,
-textarea {
+#app-content select,
+#app-content input,
+#app-content textarea {
     resize: none;
     color: var(--base-text-color);
     font-size: 1rem;
@@ -63,6 +63,8 @@ textarea {
     border-color: var(--secondary-boarder-color);
     border-style: var(--base-border-style);
     border-width: var(--base-border-width);
+
+    appearance: none; /* So that it shows up correctly in Safari */
 }
 
 
@@ -72,11 +74,13 @@ textarea {
     flex-direction: column;
     align-items: center;
     margin-top: 10%;
+    background-color: var(--secondary-bg-color);
 }
 
 #sign-out-container {
     display: flex;
     justify-content: space-between;
+    background-image: linear-gradient( 177deg, var(--base-bg-hover-color) 0%, var(--secondary-bg-color) 56%);
 }
 
 h1 {

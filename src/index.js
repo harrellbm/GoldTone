@@ -117,7 +117,6 @@ const initApp = function() {
       var phoneNumber = user.phoneNumber;
       var providerData = user.providerData;
       user.getIdToken().then(function(accessToken) {
-        document.getElementById('sign-in-status').textContent = 'Signed in';
         document.getElementById('sign-in-screen').style.display = 'none';
         document.getElementById('app-content').style.display = 'flex';
         document.getElementById('account-details').textContent = JSON.stringify({
@@ -136,7 +135,6 @@ const initApp = function() {
       // User is signed out.
       document.getElementById('app-content').style.display = 'none';
       document.getElementById('sign-in-screen').style.display = 'flex';
-      document.getElementById('sign-in-status').textContent = 'Signed out';
       document.getElementById('account-details').textContent = 'null';
       ui.start('#firebaseui-auth-container', uiConfig);
     }
