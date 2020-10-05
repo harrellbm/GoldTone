@@ -55,6 +55,8 @@ body {
 #app-content select,
 #app-content input,
 #app-content textarea {
+    /* So that it shows up correctly in Safari */
+    -webkit-appearance: none;
     resize: none;
     color: var(--base-text-color);
     font-size: 1rem;
@@ -63,8 +65,11 @@ body {
     border-color: var(--secondary-boarder-color);
     border-style: var(--base-border-style);
     border-width: var(--base-border-width);
+    
+    /*-webkit-border-radius: 0;*/
+    border-radius: 1px;
 
-    appearance: none; /* So that it shows up correctly in Safari */
+   
 }
 
 
