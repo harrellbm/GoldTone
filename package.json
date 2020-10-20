@@ -24,9 +24,10 @@
   },
   "homepage": "https://github.com/harrellbm/GoldTone#readme",
   "dependencies": {
-    "firebase": "^7.19.1",
+    "firebase": "^7.24.0",
     "firebaseui": "^4.6.1",
     "moment": "^2.27.0",
+    "stein-js-client": "0.0.2",
     "sweetalert2": "^9.17.1"
   },
   "devDependencies": {
