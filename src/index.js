@@ -3,6 +3,8 @@ import "./style.css";
 import "../node_modules/firebaseui/dist/firebaseui.css" // Stylesheet for firbase ui
 import moment from "moment";
 import Swal from "sweetalert2";
+import SteinStore from "stein-js-client";
+import { SteinUrl, firebaseConfig } from "./creds";
 
 // Firebase App (the core Firebase SDK) is always required and must be listed first
 import * as firebase from "firebase/app";
@@ -29,17 +31,6 @@ let communication_types = ['Email', 'Text', 'Phone Call', 'Facebook', 'Instagram
 
 
 /*------------------------*/ /* Initialize Firebase */ /*----------------------*/
-const firebaseConfig = {
-  apiKey: "AIzaSyAaFDkvt6AA7fvKOLI32ptXNgfkkOyDGN4",
-  authDomain: "goldtone-793f5.firebaseapp.com",
-  databaseURL: "https://goldtone-793f5.firebaseio.com",
-  projectId: "goldtone-793f5",
-  storageBucket: "goldtone-793f5.appspot.com",
-  messagingSenderId: "269567687183",
-  appId: "1:269567687183:web:e32eda4a67c39e83c8017a",
-  measurementId: "G-313ZP19KY1"
-};
-
 firebase.initializeApp(firebaseConfig);
 
 
@@ -1102,7 +1093,14 @@ document.getElementById("add-comm-btn").addEventListener("click", commModalLaunc
 
 /* ------------ */ /* Reminder Related Events and Functions */ /* ----------- */
 
+/* Initialize connection to Stein Google Sheet api */
+console.log(SteinUrl)
+const store = new SteinStore(SteinUrl); 
+
 /* Access reminders document */
+store.read("Reminders").then(data => {
+  console.log("data from sheet ", data);
+});
 remRef.on("child_added", snap => {
   const userListUI = document.getElementById("userList");
 	let reminder = snap.val();
