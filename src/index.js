@@ -1094,97 +1094,31 @@ document.getElementById("add-comm-btn").addEventListener("click", commModalLaunc
 /* ------------ */ /* Reminder Related Events and Functions */ /* ----------- */
 
 /* Initialize connection to Stein Google Sheet api */
-console.log(SteinUrl)
 const store = new SteinStore(SteinUrl); 
 
 /* Access reminders document */
 store.read("Reminders").then(data => {
-  console.log("data from sheet ", data);
-});
-remRef.on("child_added", snap => {
-  const userListUI = document.getElementById("userList");
-	let reminder = snap.val();
-  //console.log("database snapshot of reminders", reminder);
-
-	let $li = document.createElement("li");
-	$li.innerHTML = reminder.time_before;
-	$li.setAttribute("id", snap.key);
-	$li.addEventListener("click", remClicked);
-  // delete icon 
-  let deleteIconUI = document.createElement("span");
-  deleteIconUI.class = "delete-user";
-  deleteIconUI.innerHTML = " ☓";
-  deleteIconUI.setAttribute("userid", snap.key);
-  deleteIconUI.addEventListener("click", deleteButtonClicked) 
-  $li.append(deleteIconUI);
-
-  userListUI.append($li);
+  for(let reminder of data) {
+    console.log("data from sheet ", reminder);
+    const userListUI = document.getElementById("userList");
+  
+	  let rem = document.createElement("li");
+	 rem.innerHTML = reminder.subject;
+	  // rem.setAttribute("id", snap.key);
+    
+    userListUI.append(rem);
+  };
 });
 
-function remClicked(e) {
-
-	var userID = e.target.getAttribute("id");
-
-	const remRef = dbRef.child('reminders/' + userID);
-	const remInUI = document.getElementById("rem-in");
-
-	remInUI.innerHTML = ""
-
-	remRef.on("child_added", snap => {
-
-		var $p = document.createElement("p");
-		$p.innerHTML = snap.key  + " - " +  snap.val()
-		remInUI.append($p);
-
-	});
-
-}
-
-
-
+/* Access specific rows */
+store.read("Reminders", { search: { email: 'archerbh6@msn.com'} }).then(data => {
+  for(let reminder of data) {
+    console.log("search for rows ", reminder);
+  }
+});
 
 
 /* Example functions from tutoral, need removed later */
-function addCommBtnClicked() {
-    const comRef = dbRef.child('communications');
-    const addComInputsUI = document.getElementsByClassName("user-input");
-    // this object will hold the new user information 
-    let newUser = {};
-    // loop through View to get the data for the model 
-    for (let i = 0, len = addComInputsUI.length; i < len; i++) {
-        let key = addComInputsUI[i].getAttribute('data-key');
-        let value = addComInputsUI[i].value;
-        newUser[key] = value;
-    };
-
-    comRef.push(newUser, function () {
-        console.log("data has been inserted");
-    })
-};
-
-
-function saveUserBtnClicked() {
-    const userID = document.querySelector(".edit-userid").value;
-    const userRef = dbRef.child('users/' + userID);
-    var editedUserObject = {};
-    const editUserInputsUI = document.querySelectorAll(".edit-user-input");
-    editUserInputsUI.forEach(function (textField) {
-        let key = textField.getAttribute("data-key");
-        let value = textField.value;
-        editedUserObject[textField.getAttribute("data-key")] = textField.value
-    });
-
-	userRef.update(editedUserObject);
-    document.getElementById('edit-user-module').style.display = "none";
-}
-
-function deleteButtonClicked(e) {
-    e.stopPropagation();
-    const userID = e.target.getAttribute("userid");
-    const userRef = dbRef.child('users/' + userID);
-    userRef.remove()
-}
-
 /*
  const commRef = dbRef.child('communications/' + commId.value);
       // set data to the user field 
