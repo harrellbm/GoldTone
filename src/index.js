@@ -4,7 +4,7 @@ import "../node_modules/firebaseui/dist/firebaseui.css" // Stylesheet for firbas
 import moment from "moment";
 import Swal from "sweetalert2";
 import SteinStore from "stein-js-client";
-import { SteinUrl, firebaseConfig } from "./creds";
+import { SteinUrl, SteinUser, SteinPw, firebaseConfig } from "./creds";
 
 // Firebase App (the core Firebase SDK) is always required and must be listed first
 import * as firebase from "firebase/app";
@@ -1097,7 +1097,7 @@ document.getElementById("add-comm-btn").addEventListener("click", commModalLaunc
 const store = new SteinStore(SteinUrl); 
 
 /* Access reminders document */
-store.read("Reminders").then(data => {
+store.read("Reminders", { authentication: { username: SteinUser, password: SteinPw } }).then(data => {
   for(let reminder of data) {
     console.log("data from sheet ", reminder);
     const userListUI = document.getElementById("userList");
@@ -1111,7 +1111,7 @@ store.read("Reminders").then(data => {
 });
 
 /* Access specific rows */
-store.read("Reminders", { search: { email: 'archerbh6@msn.com'} }).then(data => {
+store.read("Reminders", { search: { email: 'archerbh6@msn.com'}, authentication: { username: SteinUser, password: SteinPw } }).then(data => {
   for(let reminder of data) {
     console.log("search for rows ", reminder);
   }
