@@ -10,8 +10,8 @@
         <link rel="apple-touch-icon" href="assets/hello-icon-152.png">   
         <meta name="theme-color" content="white"/>  
         <meta name="apple-mobile-web-app-capable" content="yes">  
-        <meta name="apple-mobile-web-app-status-bar-style" content="black"> 
-        <meta name="apple-mobile-web-app-title" content="Hello World"> 
+        <meta name="apple-mobile-web-app-status-bar-style" content="blue"> 
+        <meta name="apple-mobile-web-app-title" content="GoldTone"> 
         <meta name="msapplication-TileImage" content="assets/hello-icon-144.png">  
         <meta name="msapplication-TileColor" content="#FFFFFF">
         <link type="text/css" rel="stylesheet" href="node_modules/firebaseui/dist/firebaseui.css" />
@@ -117,25 +117,27 @@
                     </div>
                     <div>
                         <label for="goal-frequency-modal">Frequancy</label>
-                        <input id="goal-frequency-modal" class="goal-modal-input" data-key="freq" type="number" min="1" value="1"></input>  
-                        <select id="goal-frequency-denomination-modal" class="goal-modal-input" data-key="denomination">
-                            <option value="days">days</option>
-                            <option value="weeks">weeks</option>
-                            <option value="months">months</option>
-                            <option value="years">years</option>
-                        </select>  
+                        <div>
+                            <input id="goal-frequency-modal" class="goal-modal-input" data-key="freq" type="number" min="1" value="1"></input>  
+                            <select id="goal-frequency-denomination-modal" class="goal-modal-input" data-key="denomination">
+                                <option value="days">days</option>
+                                <option value="weeks">weeks</option>
+                                <option value="months">months</option>
+                                <option value="years">years</option>
+                            </select>
+                        </div>  
                     </div>
                     <div>
                         <label for="goal-reminder-modal">Reminder</label>
-                        <input id="goal-reminder-modal" class="goal-modal-input" data-key="amount" type="number" min="1" value="1"></input>  
-                        <select id="goal-reminder-denomination-modal" class="goal-modal-input" data-key="denomination">
-                            <option value="minutes">minutes</option>
-                            <option value="hours">hours</option>
-                            <option value="days">days</option>
-                            <option value="weeks">weeks</option>
-                            <option value="months">months</option>
-                            <option value="years">years</option>
-                        </select>  
+                        <div>
+                            <input id="goal-reminder-modal" class="goal-modal-input" data-key="amount" type="number" min="1" value="1"></input>  
+                            <select id="goal-reminder-denomination-modal" class="goal-modal-input" data-key="denomination">
+                                <option value="days">days</option>
+                                <option value="weeks">weeks</option>
+                                <option value="months">months</option>
+                                <option value="years">years</option>
+                            </select>
+                        </div>  
                     </div>
                     <div id="goal-btns"> 
                         <input id="goal-save-modal" class="modal-bts" type="button"  value="Save"> 
@@ -173,6 +175,18 @@
                     <div>
                         <label for="comm-date-modal">Date</label>
                         <input id="comm-date-modal" class="comm-modal-input" type="date" data-key="date"></input>  
+                    </div>
+                    <div>
+                        <label for="comm-reminder-modal">Reminder</label>
+                        <div>
+                            <input id="comm-reminder-modal" class="comm-modal-input" data-key="amount" type="number" min="1" value="1"></input>  
+                            <select id="comm-reminder-denomination-modal" class="comm-modal-input" data-key="denomination">
+                                <option value="days">days</option>
+                                <option value="weeks">weeks</option>
+                                <option value="months">months</option>
+                                <option value="years">years</option>
+                            </select>
+                        </div>  
                     </div>
                     <div>
                         <label for="comm-sent-modal">Sent</label>

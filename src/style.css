@@ -55,8 +55,6 @@ body {
 #app-content select,
 #app-content input,
 #app-content textarea {
-    /* So that it shows up correctly in Safari */
-    -webkit-appearance: none;
     resize: none;
     color: var(--base-text-color);
     font-size: 1rem;
@@ -69,7 +67,9 @@ body {
     /*-webkit-border-radius: 0;*/
     border-radius: 1px;
 
-   
+    /* So that it shows up correctly in Safari */
+    -webkit-appearance: none;
+
 }
 
 
@@ -228,7 +228,18 @@ h1 {
     height: auto;
     width: 90%; /* Could be more or less, depending on screen size */
     border-radius: 5px; /* Round corners */
-  
+  }
+
+  .goal-modal-content {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr 1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    align-items: center;
+  }
+
+  .goal-modal-content > div {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      align-items: center;
   }
 
   .comm-modal-content {
@@ -236,15 +247,22 @@ h1 {
     grid-template-rows: 1fr 1fr 2fr 2fr 2fr 1fr 1fr 1fr;
     align-items: center;
   }
-
+  
   .comm-modal-content > div {
       display: grid;
       grid-template-columns: 1fr 2fr;
       align-items: center;
-      
   }
-
-
+  
+  .goal-modal-content > div > div > input,
+  .comm-modal-content > div > div > input {
+    width: 52%;
+  }
+  
+  .goal-modal-content > div > div > select,
+  .comm-modal-content > div > div > select {
+    width: 45%;
+  }
   /* Close button styling */
 .close {
     border-radius: 50%;
